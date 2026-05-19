@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IBIT Timetable Automation — UI Design by Explicitly Kre8tive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F0F4F8; --surface:#FFFFFF; --card:#FFFFFF; --card2:#F8FAFC;
+    --border:rgba(30,64,175,0.14); --border2:rgba(0,0,0,0.08);
+    --navy:#1E3A5F; --navy-lt:#2D5F8A;
+    --gold:#1D4ED8; --gold-lt:#2563EB; --gold-dim:rgba(29,78,216,0.09);
+    --teal:#0891B2; --teal-lt:#06B6D4; --teal-dim:rgba(8,145,178,0.10);
+    --coral:#DC2626; --coral-dim:rgba(220,38,38,0.09);
+    --amber:#D97706; --amber-dim:rgba(217,119,6,0.10);
+    --blue:#0369A1; --blue-dim:rgba(3,105,161,0.10);
+    --text:#0F172A; --text2:#475569; --text3:#94A3B8;
+    --glass:rgba(29,78,216,0.05); --glass-border:rgba(29,78,216,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  /* NAV */
+  .showcase-header{position:fixed;top:0;left:0;right:0;z-index:100;background:linear-gradient(135deg,rgba(32,228,250,.85) 0%,rgba(29,78,216,.80) 50%,rgba(8,145,178,.85) 100%);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.25);padding:0 2rem;display:flex;align-items:center;gap:2rem;height:68px;box-shadow:0 2px 24px rgba(32,228,250,.35),0 4px 48px rgba(29,78,216,.25),inset 0 1px 0 rgba(255,255,255,.20);}
+  .brand{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#FFFFFF;letter-spacing:.05em;white-space:nowrap;text-transform:uppercase;}
+  .brand span{color:var(--teal);}
+  .page-nav{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;flex:1;}
+  .page-nav::-webkit-scrollbar{display:none;}
+  .nav-btn{font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;padding:8px 16px;border:1.5px solid transparent;border-radius:8px;background:transparent;color:rgba(255,255,255,.90);cursor:pointer;white-space:nowrap;transition:all .2s;}
+  .nav-btn:hover{color:#FFFFFF;background:rgba(0,0,0,.35);border:2.5px solid rgba(255,255,255,.60);border-radius:9px;}
+  .nav-btn.active{font-size:15px;font-weight:800;color:#FFFFFF;background:rgba(0,0,0,.45);border:3px solid rgba(255,255,255,.80);border-radius:9px;}
+  .canvas{padding-top:68px;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* SHARED */
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
+  .pill-gold{background:var(--gold-dim);color:var(--gold-lt);border:1px solid rgba(29,78,216,.25);}
+  .pill-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(8,145,178,.25);}
+  .pill-coral{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(220,38,38,.25);}
+  .pill-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,.25);}
+  .pill-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(3,105,161,.25);}
+  .section-label{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--text3);margin-bottom:4px;}
+
+  /* LOGIN */
+  .login-wrap{min-height:calc(100vh - 68px);display:grid;grid-template-columns:1fr 1fr;}
+  .login-left{background:linear-gradient(145deg,#0F2D5E 0%,#1E3A7A 50%,#0D2447 100%);display:flex;flex-direction:column;justify-content:center;padding:5rem 4rem;position:relative;overflow:hidden;}
+  .login-left::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(56,182,255,.18) 0%,transparent 65%);top:-120px;left:-120px;}
+  .login-left::after{content:'';position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(29,78,216,.2) 0%,transparent 65%);bottom:40px;right:-60px;}
+  .login-left-stripe{position:absolute;top:0;right:0;width:3px;height:100%;background:linear-gradient(180deg,transparent,#38BDF8,transparent);opacity:.5;}
+  .login-left-inner{position:relative;z-index:2;}
+  .login-logo{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#93C5FD;margin-bottom:3rem;display:flex;align-items:center;gap:.6rem;}
+  .logo-gem{width:22px;height:22px;background:#38BDF8;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);flex-shrink:0;}
+  .login-headline{font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:800;line-height:1.1;margin-bottom:1.5rem;color:#FFFFFF;}
+  .login-headline em{color:#38BDF8;font-style:normal;}
+  .login-sub{color:#93C5FD;font-size:.95rem;line-height:1.75;max-width:380px;margin-bottom:3rem;}
+  .login-features{display:flex;flex-direction:column;gap:.85rem;}
+  .lf-item{display:flex;align-items:center;gap:.85rem;color:#BFDBFE;font-size:.9rem;}
+  .lf-dot{width:8px;height:8px;border-radius:2px;background:#38BDF8;transform:rotate(45deg);flex-shrink:0;}
+  .login-right{background:#FFFFFF;border-left:1px solid rgba(29,78,216,.1);display:flex;align-items:center;justify-content:center;padding:4rem 3rem;}
+  .login-card{width:100%;max-width:440px;}
+  .login-card-header{margin-bottom:2.5rem;}
+  .login-card-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--text);}
+  .login-card-title span{color:var(--gold-lt);}
+  .login-card-sub{color:var(--text2);font-size:.9rem;}
+  .role-selector{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem;}
+  .role-card{border:1.5px solid #E2E8F0;border-radius:12px;padding:1.25rem 1rem;cursor:pointer;transition:all .25s;text-align:center;background:#FAFBFF;}
+  .role-card:hover{border-color:rgba(29,78,216,.4);background:var(--gold-dim);transform:translateY(-3px);box-shadow:0 8px 24px rgba(29,78,216,.1);}
+  .role-card.selected{border-color:var(--gold-lt);background:var(--gold-dim);}
+  .role-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin:0 auto .7rem;}
+  .role-icon-admin{background:var(--gold-dim);}
+  .role-icon-teacher{background:var(--teal-dim);}
+  .role-icon-student{background:var(--amber-dim);}
+  .role-name{font-size:.85rem;font-weight:600;margin-bottom:.2rem;color:var(--text);}
+  .role-desc{font-size:.75rem;color:var(--text3);}
+  .form-group{margin-bottom:1.25rem;}
+  .form-label{font-size:.8rem;font-weight:500;color:var(--text2);margin-bottom:.5rem;display:block;letter-spacing:.04em;}
+  .form-input{width:100%;padding:.75rem 1rem;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;transition:border-color .2s;}
+  .form-input:focus{outline:none;border-color:var(--gold-lt);background:#FFFFFF;}
+  .login-btn{width:100%;padding:.9rem;background:var(--gold-lt);border:none;border-radius:10px;color:#FFFFFF;font-family:'Outfit',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .25s;margin-top:.5rem;letter-spacing:.03em;}
+  .login-btn:hover{background:#1D4ED8;transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,78,216,.25);}
+  .login-footer{text-align:center;margin-top:1.5rem;color:var(--text3);font-size:.82rem;}
+  .login-footer a{color:var(--gold-lt);}
+
+  /* APP SHELL */
+  .app-shell{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 68px);}
+  .sidebar{background:linear-gradient(135deg,rgba(32,228,250,.85) 0%,rgba(29,78,216,.80) 50%,rgba(8,145,178,.85) 100%);border-right:1px solid #E2E8F0;padding:1.5rem 0;display:flex;flex-direction:column;box-shadow:2px 0 8px rgba(0,0,0,.04);}
+  .sidebar-logo{padding:0 1.5rem 1.5rem;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;border-bottom:1px solid rgba(255,255,255,.2);margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem;color:#FFFFFF;}
+  .sidebar-logo .logo-gem-sm{width:16px;height:16px;background:rgba(255,255,255,.9);clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);flex-shrink:0;}
+  .sidebar-logo span{color:rgba(255,255,255,.7);}
+  .sidebar-section{padding:0 1rem;margin-bottom:2rem;}
+  .sidebar-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.50);padding:0 .5rem;margin-bottom:.5rem;}
+  .sidebar-item{display:flex;align-items:center;gap:.7rem;padding:.6rem .75rem;border-radius:8px;font-size:15px;font-weight:600;color:rgba(255,255,255,.80);cursor:pointer;transition:all .2s;margin-bottom:2px;border:2px solid transparent;}
+  .sidebar-item:hover{background:rgba(0,0,0,.35);color:#FFFFFF;border:2.5px solid rgba(255,255,255,.60);border-radius:9px;}
+  .sidebar-item.active{background:rgba(0,0,0,.45);color:#FFFFFF;border:3px solid rgba(255,255,255,.80);border-radius:9px;font-weight:700;}
+  .sidebar-icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .sidebar-badge{margin-left:auto;background:var(--coral);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+  .main-content{background:var(--bg);padding:2rem;overflow:auto;}
+  .main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+  .page-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;color:var(--text);}
+  .page-title span{color:var(--gold-lt);}
+  .header-actions{display:flex;gap:.75rem;align-items:center;}
+  .btn{padding:.55rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:500;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .2s;}
+  .btn-ghost{background:#FFFFFF;color:var(--text2);border:1.5px solid #E2E8F0;}
+  .btn-ghost:hover{background:var(--gold-dim);color:var(--gold-lt);border-color:rgba(29,78,216,.2);transform:translateY(-1px);}
+  .btn-primary{background:var(--gold-lt);color:#FFFFFF;font-weight:600;}
+  .btn-primary:hover{background:#1D4ED8;transform:translateY(-1px);box-shadow:0 4px 16px rgba(29,78,216,.2);}
+  .btn-teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(8,145,178,.3);}
+  .btn-teal:hover{background:rgba(8,145,178,.18);transform:translateY(-1px);}
+  .btn-coral{background:var(--coral-dim);color:var(--coral);border:1px solid rgba(220,38,38,.3);}
+  .btn-coral:hover{background:rgba(220,38,38,.18);transform:translateY(-1px);}
+
+  /* DASHBOARD STATS */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+  .stat-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.25rem;position:relative;overflow:hidden;transition:all .25s;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+  .stat-card:hover{transform:translateY(-4px);border-color:rgba(29,78,216,.2);box-shadow:0 12px 32px rgba(29,78,216,.1);}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .stat-card.gold::before{background:var(--gold-lt);}
+  .stat-card.teal::before{background:var(--teal);}
+  .stat-card.coral::before{background:var(--coral);}
+  .stat-card.amber::before{background:var(--amber);}
+  .stat-label{font-size:.78rem;color:var(--text3);margin-bottom:.5rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;}
+  .stat-value{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:.3rem;}
+  .stat-sub{font-size:.78rem;color:var(--text3);}
+  .stat-trend{font-size:.78rem;font-weight:600;}
+  .trend-up{color:var(--teal);}
+  .trend-dn{color:var(--coral);}
+
+  .dash-grid{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;margin-bottom:1.5rem;}
+  .card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.5rem;transition:border-color .2s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .card:hover{border-color:rgba(29,78,216,.15);}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+  .card-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text);}
+  .card-sub{font-size:.8rem;color:var(--text3);margin-top:2px;}
+
+  .mini-chart{display:flex;align-items:flex-end;gap:6px;height:80px;}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .bar{width:100%;border-radius:4px 4px 0 0;transition:height .3s;min-width:12px;}
+  .bar-label{font-size:9px;color:var(--text3);font-family:'Space Mono',monospace;}
+
+  .activity-list{display:flex;flex-direction:column;gap:.75rem;}
+  .activity-item{display:flex;gap:.75rem;align-items:flex-start;}
+  .activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+  .activity-text{font-size:.83rem;color:var(--text2);line-height:1.5;}
+  .activity-text strong{color:var(--text);font-weight:600;}
+  .activity-time{font-size:.75rem;color:var(--text3);margin-top:2px;font-family:'Space Mono',monospace;}
+
+  .bottom-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;}
+
+  .mini-tt{width:100%;border-collapse:collapse;font-size:.78rem;}
+  .mini-tt th{background:#F8FAFC;color:var(--text2);font-weight:600;padding:.5rem .4rem;text-align:center;font-size:.75rem;letter-spacing:.04em;border:1px solid #E2E8F0;}
+  .mini-tt td{border:1px solid #E2E8F0;padding:.3rem;min-width:80px;}
+  .tt-cell{border-radius:6px;padding:.35rem .5rem;font-size:.75rem;font-weight:500;text-align:center;line-height:1.3;transition:all .15s;cursor:pointer;}
+  .tt-cell:hover{filter:brightness(.93);transform:scale(1.03);}
+  .tc-gold{background:rgba(29,78,216,.1);color:var(--gold-lt);}
+  .tc-teal{background:rgba(8,145,178,.1);color:var(--teal);}
+  .tc-coral{background:rgba(220,38,38,.1);color:var(--coral);}
+  .tc-amber{background:rgba(217,119,6,.1);color:var(--amber);}
+  .tc-blue{background:rgba(3,105,161,.1);color:var(--blue);}
+
+  .req-list{display:flex;flex-direction:column;gap:.6rem;}
+  .req-item{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;transition:all .2s;}
+  .req-item:hover{border-color:rgba(29,78,216,.2);background:var(--gold-dim);}
+  .req-info{flex:1;}
+  .req-teacher{font-size:.83rem;font-weight:600;margin-bottom:.15rem;color:var(--text);}
+  .req-detail{font-size:.75rem;color:var(--text3);}
+  .req-actions{display:flex;gap:.4rem;}
+  .req-btn{padding:.3rem .7rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:all .15s;}
+  .req-btn:hover{transform:scale(1.05);}
+  .req-approve{background:rgba(8,145,178,.12);color:var(--teal);}
+  .req-reject{background:var(--coral-dim);color:var(--coral);}
+
+  /* TIMETABLE VIEW PAGE */
+  .tt-page{padding:2rem;background:var(--bg);min-height:calc(100vh - 68px);}
+  .tt-toolbar{display:flex;align-items:center;justify-content:space-between;background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1rem 1.5rem;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .tt-title-section{display:flex;align-items:center;gap:1rem;}
+  .week-nav{display:flex;align-items:center;gap:.5rem;}
+  .week-btn{width:32px;height:32px;border-radius:8px;background:#F8FAFC;border:1.5px solid #E2E8F0;color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+  .week-btn:hover{background:var(--gold-dim);color:var(--gold-lt);border-color:rgba(29,78,216,.25);}
+  .week-label{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text);}
+  .tt-filters{display:flex;gap:.5rem;flex-wrap:wrap;}
+  .filter-select{padding:.45rem .9rem;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;color:var(--text);font-size:.82rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:border-color .2s;}
+  .filter-select:focus{outline:none;border-color:var(--gold-lt);}
+
+  .tt-grid-wrap{overflow-x:auto;}
+  .tt-grid{border-radius:14px;overflow:hidden;border:1.5px solid #E2E8F0;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+  .tt-head{display:grid;grid-template-columns:90px repeat(5,1fr);background:#F8FAFC;}
+  .tt-head-cell{padding:.75rem;border-right:1px solid #E2E8F0;font-size:.8rem;font-weight:600;text-align:center;color:var(--text2);letter-spacing:.04em;text-transform:uppercase;}
+  .tt-head-cell.today{background:var(--gold-dim);color:var(--gold-lt);}
+  .tt-body{background:#FFFFFF;}
+  .tt-row{display:grid;grid-template-columns:90px repeat(5,1fr);border-top:1px solid #E2E8F0;}
+  .tt-time{padding:.6rem .5rem;border-right:1px solid #E2E8F0;font-family:'Space Mono',monospace;font-size:.75rem;color:var(--text3);text-align:right;display:flex;align-items:center;justify-content:flex-end;padding-right:.75rem;background:#F8FAFC;}
+  .tt-slot{border-right:1px solid #E2E8F0;padding:.4rem;min-height:64px;position:relative;}
+  .class-block{border-radius:8px;padding:.5rem .6rem;height:100%;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;justify-content:center;}
+  .class-block:hover{filter:brightness(.93);transform:scale(1.03);box-shadow:0 4px 12px rgba(0,0,0,.1);}
+  .cb-course{font-size:.78rem;font-weight:600;margin-bottom:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cb-room{font-size:.7rem;opacity:.8;}
+  .cb-teacher{font-size:.7rem;opacity:.7;margin-top:.1rem;}
+
+  .legend{display:flex;gap:1.5rem;margin-top:1.25rem;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--text2);}
+  .legend-dot{width:10px;height:10px;border-radius:3px;}
+
+  /* CLASH PAGE */
+  .clash-page{padding:2rem;background:var(--bg);min-height:calc(100vh - 68px);}
+  .clash-banner{background:linear-gradient(135deg,rgba(220,38,38,.08),rgba(220,38,38,.03));border:1.5px solid rgba(220,38,38,.25);border-radius:14px;padding:1.5rem 2rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;}
+  .clash-icon-big{font-size:2.5rem;}
+  .clash-banner-text h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--coral);margin-bottom:.3rem;}
+  .clash-banner-text p{color:var(--text2);font-size:.9rem;}
+  .clash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
+  .clash-card{background:#FFFFFF;border:1.5px solid rgba(220,38,38,.2);border-radius:14px;padding:1.5rem;border-left:4px solid var(--coral);transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .clash-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(220,38,38,.1);}
+  .clash-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+  .clash-type{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--coral);}
+  .conflict-items{display:flex;flex-direction:column;gap:.75rem;}
+  .conflict-row{background:#F8FAFC;border-radius:10px;border:1px solid #E2E8F0;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
+  .conflict-label{font-size:.8rem;color:var(--text3);margin-bottom:.2rem;}
+  .conflict-value{font-size:.9rem;font-weight:600;color:var(--text);}
+  .vs-badge{background:var(--coral-dim);color:var(--coral);font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap;font-family:'Space Mono',monospace;}
+  .suggestions{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .sug-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;}
+  .sug-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--teal);}
+  .sug-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;}
+  .sug-card{background:var(--teal-dim);border:1.5px solid rgba(8,145,178,.2);border-radius:10px;padding:1rem;cursor:pointer;transition:all .2s;}
+  .sug-card:hover{background:rgba(8,145,178,.18);transform:translateY(-3px);box-shadow:0 8px 20px rgba(8,145,178,.12);}
+  .sug-card-rank{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--teal);margin-bottom:.35rem;}
+  .sug-day{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:.2rem;}
+  .sug-time{font-size:.82rem;color:var(--text2);margin-bottom:.35rem;}
+  .sug-btn{width:100%;padding:.5rem;border-radius:7px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:'Outfit',sans-serif;background:var(--teal);color:#FFFFFF;margin-top:.5rem;transition:all .2s;}
+  .sug-btn:hover{background:var(--teal-lt);}
+
+  /* TEACHER REQUEST */
+  .req-page{padding:2rem;background:var(--bg);min-height:calc(100vh - 68px);}
+  .req-layout{display:grid;grid-template-columns:1fr 360px;gap:1.5rem;align-items:start;}
+  .form-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.05);}
+  .form-card-header{background:linear-gradient(135deg,rgba(29,78,216,.08),rgba(8,145,178,.05));padding:1.75rem 2rem;border-bottom:1px solid #E2E8F0;}
+  .form-card-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.35rem;color:var(--text);}
+  .form-card-sub{color:var(--text2);font-size:.88rem;}
+  .form-card-body{padding:2rem;}
+  .req-type-tabs{display:flex;gap:.5rem;margin-bottom:2rem;}
+  .req-tab{flex:1;padding:.7rem;border-radius:10px;text-align:center;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s;border:1.5px solid #E2E8F0;color:var(--text2);background:#F8FAFC;}
+  .req-tab:hover{border-color:rgba(29,78,216,.25);color:var(--gold-lt);background:var(--gold-dim);}
+  .req-tab.active{background:var(--gold-dim);border-color:rgba(29,78,216,.3);color:var(--gold-lt);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .form-field{margin-bottom:1.25rem;}
+  .field-label{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem;display:block;}
+  .field-input{width:100%;padding:.7rem 1rem;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;transition:border-color .2s;}
+  .field-input:focus{outline:none;border-color:var(--gold-lt);background:#FFFFFF;}
+  .field-textarea{width:100%;padding:.75rem 1rem;min-height:90px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.9rem;resize:vertical;transition:border-color .2s;}
+  .field-textarea:focus{outline:none;border-color:var(--gold-lt);background:#FFFFFF;}
+  .submit-btn{width:100%;padding:1rem;border-radius:12px;border:none;background:var(--gold-lt);color:#FFFFFF;font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;transition:all .2s;letter-spacing:.04em;}
+  .submit-btn:hover{background:#1D4ED8;transform:translateY(-2px);box-shadow:0 8px 24px rgba(29,78,216,.2);}
+  .avail-check{background:rgba(8,145,178,.08);border:1.5px solid rgba(8,145,178,.2);border-radius:10px;padding:.85rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--teal);}
+  .workflow-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .workflow-header{padding:1.25rem 1.5rem;border-bottom:1px solid #E2E8F0;}
+  .workflow-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);}
+  .workflow-body{padding:1.5rem;}
+  .workflow-step{display:flex;gap:1rem;position:relative;padding-bottom:1.5rem;}
+  .workflow-step:last-child{padding-bottom:0;}
+  .workflow-step::before{content:'';position:absolute;left:15px;top:34px;width:2px;height:calc(100% - 10px);background:#E2E8F0;}
+  .workflow-step:last-child::before{display:none;}
+  .step-circle{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;z-index:1;}
+  .sc-done{background:rgba(8,145,178,.12);color:var(--teal);border:2px solid rgba(8,145,178,.3);}
+  .sc-active{background:var(--gold-dim);color:var(--gold-lt);border:2px solid rgba(29,78,216,.3);}
+  .sc-pending{background:#F8FAFC;color:var(--text3);border:2px solid #E2E8F0;}
+  .step-info{padding-top:.4rem;}
+  .step-name{font-size:.88rem;font-weight:600;margin-bottom:.15rem;color:var(--text);}
+  .step-desc{font-size:.78rem;color:var(--text3);}
+  .hist-item{display:flex;gap:.75rem;margin-bottom:.75rem;}
+  .hist-title{font-size:.82rem;font-weight:600;margin-bottom:.15rem;color:var(--text);}
+  .hist-meta{font-size:.75rem;color:var(--text3);}
+
+  /* NOTIFICATIONS */
+  .notif-page{padding:2rem;background:var(--bg);min-height:calc(100vh - 68px);}
+  .notif-layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem;}
+  .notif-sidebar{display:flex;flex-direction:column;gap:1rem;}
+  .notif-summary{background:linear-gradient(135deg,rgba(32,228,250,.15) 0%,rgba(29,78,216,.20) 50%,rgba(8,145,178,.15) 100%);backdrop-filter:blur(24px) saturate(180%);border:4px solid rgba(12,49,161,.25);border-radius:14px;padding:1.25rem;box-shadow:0 4px 24px rgba(32,228,250,.20),0 8px 32px rgba(29,78,216,.15),inset 0 1px 0 rgba(255,255,255,.15);}
+  .ns-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:1rem;color:var(--text);}
+  .ns-stat{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-top:1px solid #E2E8F0;}
+  .ns-label{font-size:.82rem;color:var(--text2);}
+  .ns-count{font-size:.85rem;font-weight:700;}
+  .notif-filter{background:linear-gradient(135deg,rgba(32,228,250,.15) 0%,rgba(29,78,216,.20) 50%,rgba(8,145,178,.15) 100%);backdrop-filter:blur(24px) saturate(180%);border:4px solid rgba(12,49,161,.25);border-radius:14px;padding:1.25rem;box-shadow:0 4px 24px rgba(32,228,250,.20),0 8px 32px rgba(29,78,216,.15),inset 0 1px 0 rgba(255,255,255,.15);}
+  .nf-header{padding:.75rem 1rem;border-bottom:1px solid #E2E8F0;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);}
+  .nf-btn{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;font-size:.85rem;cursor:pointer;border-top:1px solid #E2E8F0;color:var(--text2);transition:all .15s;}
+  .nf-btn:first-of-type{border-top:none;}
+  .nf-btn:hover{background:var(--gold-dim);color:var(--gold-lt);}
+  .nf-btn.active{background:var(--gold-dim);color:var(--gold-lt);}
+  .nf-count{font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--gold-dim);color:var(--gold-lt);}
+  .notif-feed{display:flex;flex-direction:column;gap:0;}
+  .notif-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:0;border-bottom:none;padding:1.25rem 1.5rem;display:flex;gap:1rem;align-items:flex-start;transition:all .15s;cursor:pointer;}
+  .notif-card:first-child{border-radius:14px 14px 0 0;}
+  .notif-card:last-child{border-radius:0 0 14px 14px;border-bottom:1.5px solid #E2E8F0;}
+  .notif-card:hover{background:#F8FAFC;padding-left:1.75rem;}
+  .notif-card.unread{border-left:3px solid var(--gold-lt);}
+  .notif-card.unread.teal{border-left-color:var(--teal);}
+  .notif-card.unread.coral{border-left-color:var(--coral);}
+  .notif-card.unread.amber{border-left-color:var(--amber);}
+  .notif-dot{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .nd-gold{background:var(--gold-dim);}
+  .nd-teal{background:var(--teal-dim);}
+  .nd-coral{background:var(--coral-dim);}
+  .nd-amber{background:var(--amber-dim);}
+  .notif-body{flex:1;}
+  .notif-title{font-size:.88rem;font-weight:600;margin-bottom:.25rem;color:var(--text);}
+  .notif-msg{font-size:.82rem;color:var(--text2);line-height:1.5;margin-bottom:.35rem;}
+  .notif-meta{font-size:.75rem;color:var(--text3);font-family:'Space Mono',monospace;}
+  .notif-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--gold-lt);flex-shrink:0;margin-top:6px;}
+
+  /* ANALYTICS */
+  .analytics-page{padding:2rem;background:var(--bg);min-height:calc(100vh - 68px);}
+  .analytics-header{margin-bottom:2rem;}
+  .analytics-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:.3rem;color:var(--text);}
+  .analytics-sub{color:var(--text2);font-size:.88rem;}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+  .kpi-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.25rem;position:relative;transition:all .25s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .kpi-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(29,78,216,.1);}
+  .kpi-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:.75rem;}
+  .kpi-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;margin-bottom:.3rem;}
+  .kpi-label{font-size:.78rem;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.07em;}
+  .kpi-delta{font-size:.78rem;font-weight:600;margin-top:.3rem;}
+  .kpi-bar{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 14px 14px;}
+  .analytics-main{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
+  .chart-card{background:#FFFFFF;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.5rem;transition:border-color .2s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .chart-card:hover{border-color:rgba(29,78,216,.15);}
+  .chart-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.5rem;color:var(--text);}
+  .bar-chart{display:flex;align-items:flex-end;gap:12px;height:140px;padding-bottom:1.5rem;position:relative;}
+  .bar-chart::after{content:'';position:absolute;bottom:1.5rem;left:0;right:0;height:1px;background:#E2E8F0;}
+  .bc-group{flex:1;display:flex;gap:4px;align-items:flex-end;}
+  .bc-bar{flex:1;border-radius:4px 4px 0 0;min-height:8px;transition:opacity .2s;}
+  .bc-bar:hover{opacity:.7;}
+  .bc-label{text-align:center;font-size:.72rem;color:var(--text3);font-family:'Space Mono',monospace;margin-top:.5rem;}
+  .chart-legend{display:flex;gap:1.5rem;margin-top:.5rem;}
+  .cl-item{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--text2);}
+  .cl-dot{width:8px;height:8px;border-radius:2px;}
+  .donut-wrap{display:flex;align-items:center;gap:2rem;}
+  .donut-legend{flex:1;}
+  .dl-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-top:1px solid #E2E8F0;}
+  .dl-item:first-child{border-top:none;}
+  .dl-label{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text);}
+  .dl-square{width:10px;height:10px;border-radius:2px;}
+  .dl-pct{font-size:.82rem;font-weight:700;font-family:'Space Mono',monospace;}
+  .analytics-bottom{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+  .teacher-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  .teacher-table th{padding:.6rem .75rem;text-align:left;color:var(--text3);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid #E2E8F0;}
+  .teacher-table td{padding:.65rem .75rem;border-bottom:1px solid #E2E8F0;color:var(--text2);}
+  .teacher-table tr:hover td{background:var(--gold-dim);color:var(--text);}
+  .teacher-table tr:last-child td{border-bottom:none;}
+  .perf-bar-wrap{display:flex;align-items:center;gap:.5rem;}
+  .perf-bar{height:6px;border-radius:3px;flex:1;background:#E2E8F0;overflow:hidden;}
+  .perf-fill{height:100%;border-radius:3px;}
+  .perf-pct{font-size:.75rem;font-weight:600;font-family:'Space Mono',monospace;min-width:28px;text-align:right;}
+
+  /* ══════════════════════════════════════
+     BUILD TIMETABLE PAGE — NEW
+  ══════════════════════════════════════ */
+  .builder-page { padding: 2rem; background: var(--bg); min-height: calc(100vh - 68px); }
+
+  /* Top config strip */
+  .builder-config {
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 14px;
+    padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .config-label { font-size: .78rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; }
+  .config-select {
+    padding: .45rem 1rem; background: #F8FAFC; border: 1.5px solid #E2E8F0;
+    border-radius: 8px; color: var(--text); font-size: .85rem; font-family: 'Outfit', sans-serif;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .config-select:focus { outline: none; border-color: var(--gold-lt); }
+  .builder-stats-row {
+    display: flex; gap: .75rem; margin-left: auto;
+  }
+  .b-stat-chip {
+    display: flex; align-items: center; gap: .4rem;
+    background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 8px;
+    padding: .35rem .75rem; font-size: .78rem; font-weight: 600; color: var(--text2);
+  }
+  .b-stat-chip.gold  { background: var(--gold-dim);  color: var(--gold-lt);  border-color: rgba(29,78,216,.2); }
+  .b-stat-chip.teal  { background: var(--teal-dim);  color: var(--teal);     border-color: rgba(8,145,178,.2); }
+  .b-stat-chip.coral { background: var(--coral-dim); color: var(--coral);    border-color: rgba(220,38,38,.2); }
+
+  /* Two-column layout */
+  .builder-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+
+  /* Interactive grid */
+  .builder-grid-card {
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 14px;
+    overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.06);
+  }
+  .builder-grid-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; background: #F8FAFC;
+  }
+  .builder-grid-table { width: 100%; border-collapse: collapse; }
+  .bgt-th {
+    padding: .65rem .5rem; border: 1px solid #E2E8F0;
+    font-size: .78rem; font-weight: 600; text-align: center;
+    color: var(--text2); background: #F8FAFC; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .bgt-th.today-col { background: var(--gold-dim); color: var(--gold-lt); }
+  .bgt-time {
+    padding: .5rem .75rem; border: 1px solid #E2E8F0;
+    font-family: 'Space Mono', monospace; font-size: .72rem; color: var(--text3);
+    background: #F8FAFC; white-space: nowrap; text-align: right; min-width: 90px;
+  }
+  .bgt-cell {
+    border: 1px solid #E2E8F0; padding: .3rem; min-height: 68px; position: relative;
+    transition: background .15s;
+  }
+  .bgt-cell.break-row { background: rgba(217,119,6,.04); }
+  .bgt-cell.selected-cell { background: rgba(29,78,216,.06) !important; outline: 2px solid rgba(29,78,216,.3); outline-offset: -2px; }
+
+  /* Empty cell clickable */
+  .empty-slot {
+    width: 100%; height: 100%; min-height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border-radius: 6px;
+    border: 2px dashed transparent; transition: all .2s;
+  }
+  .empty-slot:hover { background: var(--gold-dim); border-color: rgba(29,78,216,.3); }
+  .empty-slot-icon { font-size: 1.1rem; color: var(--text3); transition: color .2s; }
+  .empty-slot:hover .empty-slot-icon { color: var(--gold-lt); }
+
+  /* Placed class block in builder */
+  .built-class {
+    border-radius: 7px; padding: .45rem .55rem; height: 100%; min-height: 60px;
+    cursor: default; display: flex; flex-direction: column; justify-content: space-between;
+    position: relative;
+  }
+  .built-class:hover .bc-remove { opacity: 1; }
+  .bc-remove {
+    position: absolute; top: 3px; right: 3px;
+    width: 17px; height: 17px; border-radius: 4px;
+    background: rgba(220,38,38,.18); color: var(--coral);
+    border: none; cursor: pointer; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .15s;
+    line-height: 1;
+  }
+  .bc-remove:hover { background: rgba(220,38,38,.35); }
+  .bc-course-name { font-size: .76rem; font-weight: 700; margin-bottom: .1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 16px; }
+  .bc-detail { font-size: .68rem; opacity: .8; }
+
+  /* Break row label */
+  .break-label {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; color: var(--text3); font-family: 'Space Mono', monospace;
+  }
+
+  /* Form panel */
+  .add-form-panel {
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    position: sticky; top: 84px;
+  }
+  .afp-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0;
+    background: linear-gradient(135deg, rgba(29,78,216,.08), rgba(8,145,178,.05));
+  }
+  .afp-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+  .afp-sub { font-size: .78rem; color: var(--text3); }
+  .afp-body { padding: 1.25rem; }
+  .afp-field { margin-bottom: 1rem; }
+  .afp-label { font-size: .72rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); margin-bottom: .4rem; display: block; }
+  .afp-input {
+    width: 100%; padding: .6rem .9rem; background: #F8FAFC;
+    border: 1.5px solid #E2E8F0; border-radius: 9px;
+    color: var(--text); font-family: 'Outfit', sans-serif; font-size: .85rem;
+    transition: border-color .2s; cursor: pointer;
+  }
+  .afp-input:focus { outline: none; border-color: var(--gold-lt); background: #FFFFFF; }
+  .afp-hint {
+    font-size: .72rem; color: var(--teal); background: var(--teal-dim);
+    border: 1px solid rgba(8,145,178,.2); border-radius: 8px;
+    padding: .5rem .75rem; margin-bottom: 1rem;
+  }
+  .afp-conflict-warn {
+    font-size: .72rem; color: var(--coral); background: var(--coral-dim);
+    border: 1px solid rgba(220,38,38,.2); border-radius: 8px;
+    padding: .5rem .75rem; margin-bottom: 1rem; display: none;
+  }
+  .add-btn {
+    width: 100%; padding: .85rem; border-radius: 11px; border: none;
+    background: var(--gold-lt); color: #FFFFFF; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: .95rem; cursor: pointer; transition: all .2s;
+    letter-spacing: .03em;
+  }
+  .add-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29,78,216,.2); }
+  .add-btn:active { transform: translateY(0); }
+
+  /* Course color legend in form */
+  .color-preview {
+    display: flex; align-items: center; gap: .5rem; margin-top: .4rem; flex-wrap: wrap;
+  }
+  .cp-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* Course legend strip */
+  .builder-legend {
+    display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;
+  }
+  .bl-item { display: flex; align-items: center; gap: .4rem; font-size: .77rem; color: var(--text2); }
+  .bl-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* Toast notification */
+  .toast-container {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    pointer-events: none;
+  }
+  .toast-msg {
+    background: var(--navy); color: #FFFFFF;
+    padding: .7rem 1.4rem; border-radius: 12px; font-size: .85rem; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,.2); font-family: 'Outfit', sans-serif;
+    display: flex; align-items: center; gap: .5rem;
+    animation: toastIn .3s ease forwards;
+    max-width: 360px; text-align: center;
+  }
+  .toast-msg.success { background: var(--teal); }
+  .toast-msg.error   { background: var(--coral); }
+  .toast-msg.warn    { background: var(--amber); }
+  @keyframes toastIn  { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; transform: translateY(8px); } }
+  .toast-msg.out { animation: toastOut .3s ease forwards; }
+
+  /* Publish confirm overlay */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,.5);
+    z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #FFFFFF; border-radius: 18px; padding: 2.5rem;
+    max-width: 420px; width: 90%; box-shadow: 0 24px 80px rgba(0,0,0,.2);
+    text-align: center;
+  }
+  .modal-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: .5rem; }
+  .modal-sub { color: var(--text2); font-size: .88rem; margin-bottom: 2rem; line-height: 1.6; }
+  .modal-actions { display: flex; gap: .75rem; justify-content: center; }
+  .modal-cancel { padding: .7rem 1.6rem; border-radius: 10px; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: var(--text2); font-family: 'Outfit', sans-serif; font-weight: 500; cursor: pointer; transition: all .2s; }
+  .modal-cancel:hover { border-color: rgba(29,78,216,.3); color: var(--gold-lt); }
+  .modal-confirm { padding: .7rem 1.6rem; border-radius: 10px; border: none; background: var(--gold-lt); color: #FFFFFF; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .modal-confirm:hover { background: #1D4ED8; box-shadow: 0 4px 16px rgba(29,78,216,.25); }
+
+  .ek-watermark{position:fixed;bottom:1rem;right:1.5rem;font-family:'Space Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;opacity:.25;pointer-events:none;color:var(--gold-lt);}
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+  /* ══════════════════════════════════════
+       NEW STYLE: Monthly calendar & all‑sections tweaks
+    ══════════════════════════════════════ */
+    /* Monthly view placeholder */
+    .monthly-grid-wrapper {
+      display: none;               /* hidden by default, JS will toggle */
+      background: #FFFFFF;
+      border:1.5px solid #E2E8F0;
+      border-radius:14px;
+      overflow: hidden;
+      box-shadow:0 1px 8px rgba(0,0,0,.06);
+    }
+    .monthly-grid-wrapper.active {
+      display: block;
+    }
+    .monthly-grid {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .monthly-grid th,
+    .monthly-grid td {
+      border:1px solid #E2E8F0;
+      padding:.4rem;
+      vertical-align: top;
+      min-width: 80px;
+      height: 90px;
+    }
+    .monthly-grid th {
+      background:#F8FAFC;
+      font-size:.75rem;
+      font-weight:600;
+      text-transform:uppercase;
+      color:var(--text2);
+      text-align:center;
+    }
+    .monthly-grid td {
+      font-size:.72rem;
+      position:relative;
+    }
+    .monthly-grid .date-badge {
+      position:absolute;
+      top:4px; right:4px;
+      font-weight:600;
+      color:var(--text3);
+    }
+    /* All‑sections slot stacking (inside .tt-slot or .bgt-cell) */
+    .slot-entries {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-height: 60px;
+      width: 100%;
+    }
+    .class-block, .built-class {
+      flex: auto;
+    }
+
+    /* Additional class within a cell */
+    .class-block + .class-block,
+    .built-class + .built-class {
+      margin-top: 2px;
+    }
+
+    /* Builder grid cell stacked view */
+    .cell-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-height: 60px;
+      width: 100%;
+    }
+    .cell-stack .empty-slot {
+      flex: 1;
+    }
+    .cell-stack .built-class {
+      flex: 0 0 auto;
+      margin-bottom: 2px;
+    }
+
+    /* View toggle buttons */
+    .view-toggle-group {
+      display: flex;
+      gap: .5rem;
+    }
+    .view-toggle-btn {
+      font-family:'Outfit',sans-serif;
+      font-size:.78rem;
+      font-weight:600;
+      padding:.35rem .9rem;
+      border-radius:8px;
+      border:1.5px solid #E2E8F0;
+      background:#F8FAFC;
+      color:var(--text2);
+      cursor:pointer;
+      transition:all .2s;
+    }
+    .view-toggle-btn.active {
+      background:var(--gold-dim);
+      border-color:rgba(29,78,216,.3);
+      color:var(--gold-lt);
+    }
+
+    /* Build timetable: All‑Sections toggle */
+    .config-select option[value="all"] {
+      font-weight: 600;
+    }
+
+  /* ══════════════════════════════════════
+     MANAGE PAGES — Teachers / Rooms / Courses / Sections
+  ══════════════════════════════════════ */
+  .manage-page { padding: 2rem; background: var(--bg); min-height: calc(100vh - 68px); }
+
+  /* Search + action bar */
+  .manage-toolbar {
+    display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 14px;
+    padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .manage-search {
+    flex: 1; min-width: 180px; padding: .6rem 1rem;
+    background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 9px;
+    font-family: 'Outfit', sans-serif; font-size: .88rem; color: var(--text);
+    transition: border-color .2s;
+  }
+  .manage-search:focus { outline: none; border-color: var(--gold-lt); background: #FFFFFF; }
+  .manage-filter-sel {
+    padding: .58rem 1rem; background: #F8FAFC; border: 1.5px solid #E2E8F0;
+    border-radius: 9px; color: var(--text); font-size: .82rem;
+    font-family: 'Outfit', sans-serif; cursor: pointer; transition: border-color .2s;
+  }
+  .manage-filter-sel:focus { outline: none; border-color: var(--gold-lt); }
+
+  /* KPI strip */
+  .manage-kpi { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+
+  /* Main layout: table + side panel */
+  .manage-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+
+  /* Data table card */
+  .manage-table-card {
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 14px;
+    overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.06);
+  }
+  .manage-table-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.5rem; border-bottom: 1px solid #E2E8F0; background: #F8FAFC;
+  }
+  .manage-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+  .manage-table th {
+    padding: .65rem 1rem; text-align: left; background: #F8FAFC;
+    color: var(--text3); font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    border-bottom: 1.5px solid #E2E8F0;
+  }
+  .manage-table td { padding: .75rem 1rem; border-bottom: 1px solid #E2E8F0; color: var(--text2); vertical-align: middle; }
+  .manage-table tr:last-child td { border-bottom: none; }
+  .manage-table tr:hover td { background: var(--gold-dim); color: var(--text); }
+  .manage-table tr.selected-row td { background: rgba(29,78,216,.07); }
+
+  /* Avatar / icon cell */
+  .row-avatar {
+    width: 34px; height: 34px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .row-name { font-weight: 600; color: var(--text); font-size: .85rem; }
+  .row-sub  { font-size: .72rem; color: var(--text3); margin-top: 1px; }
+
+  /* Status badge */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px; font-size: .72rem; font-weight: 600;
+    font-family: 'Space Mono', monospace; text-transform: uppercase;
+  }
+  .sb-active   { background: rgba(8,145,178,.1);  color: var(--teal);  border: 1px solid rgba(8,145,178,.25); }
+  .sb-inactive { background: rgba(220,38,38,.09); color: var(--coral); border: 1px solid rgba(220,38,38,.2); }
+  .sb-full     { background: rgba(220,38,38,.09); color: var(--coral); border: 1px solid rgba(220,38,38,.2); }
+  .sb-avail    { background: rgba(8,145,178,.1);  color: var(--teal);  border: 1px solid rgba(8,145,178,.25); }
+  .sb-core     { background: var(--gold-dim);      color: var(--gold-lt); border: 1px solid rgba(29,78,216,.2); }
+  .sb-elective { background: var(--amber-dim);     color: var(--amber);   border: 1px solid rgba(217,119,6,.2); }
+  .sb-lab      { background: var(--teal-dim);      color: var(--teal);    border: 1px solid rgba(8,145,178,.25); }
+
+  /* Utilisation bar */
+  .util-bar-wrap { display: flex; align-items: center; gap: .5rem; min-width: 100px; }
+  .util-bar { height: 6px; border-radius: 3px; flex: 1; background: #E2E8F0; overflow: hidden; }
+  .util-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+  .util-pct { font-size: .72rem; font-weight: 700; font-family: 'Space Mono', monospace; min-width: 28px; text-align: right; }
+
+  /* Row action buttons */
+  .row-actions { display: flex; gap: .35rem; }
+  .row-btn {
+    padding: .28rem .65rem; border-radius: 6px; font-size: .72rem; font-weight: 600;
+    cursor: pointer; border: none; font-family: 'Outfit', sans-serif; transition: all .15s;
+  }
+  .row-btn:hover { transform: scale(1.06); }
+  .rb-edit   { background: var(--gold-dim);  color: var(--gold-lt); }
+  .rb-delete { background: var(--coral-dim); color: var(--coral);   }
+  .rb-view   { background: var(--teal-dim);  color: var(--teal);    }
+
+  /* Side form panel */
+  .manage-form-panel {
+    background: #FFFFFF; border: 1.5px solid #E2E8F0; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    position: sticky; top: 84px;
+  }
+  .mfp-header {
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid #E2E8F0;
+    background: linear-gradient(135deg, rgba(29,78,216,.08), rgba(8,145,178,.05));
+  }
+  .mfp-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: .2rem; }
+  .mfp-sub   { font-size: .75rem; color: var(--text3); }
+  .mfp-body  { padding: 1.25rem; }
+  .mfp-field { margin-bottom: 1rem; }
+  .mfp-label { font-size: .72rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); margin-bottom: .4rem; display: block; }
+  .mfp-input, .mfp-select {
+    width: 100%; padding: .62rem .9rem;
+    background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 9px;
+    color: var(--text); font-family: 'Outfit', sans-serif; font-size: .85rem;
+    transition: border-color .2s;
+  }
+  .mfp-input:focus, .mfp-select:focus { outline: none; border-color: var(--gold-lt); background: #FFFFFF; }
+  .mfp-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+  .mfp-save-btn {
+    width: 100%; padding: .85rem; border-radius: 11px; border: none;
+    background: var(--gold-lt); color: #FFFFFF; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: .92rem; cursor: pointer; transition: all .2s; letter-spacing: .03em;
+  }
+  .mfp-save-btn:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29,78,216,.2); }
+  .mfp-cancel-btn {
+    width: 100%; padding: .65rem; border-radius: 9px; border: 1.5px solid #E2E8F0;
+    background: #F8FAFC; color: var(--text2); font-family: 'Outfit', sans-serif;
+    font-size: .85rem; cursor: pointer; transition: all .2s; margin-top: .5rem;
+  }
+  .mfp-cancel-btn:hover { border-color: rgba(220,38,38,.3); color: var(--coral); }
+
+  /* Inline chips for multi-value (courses assigned to teacher, sections in room, etc.) */
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .25rem; }
+  .chip {
+    font-size: .7rem; font-weight: 600; padding: 2px 8px; border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+  }
+  .chip-gold   { background: var(--gold-dim);  color: var(--gold-lt); }
+  .chip-teal   { background: var(--teal-dim);  color: var(--teal);    }
+  .chip-amber  { background: var(--amber-dim); color: var(--amber);   }
+  .chip-coral  { background: var(--coral-dim); color: var(--coral);   }
+  .chip-blue   { background: var(--blue-dim);  color: var(--blue);    }
+
+  /* Empty state */
+  .manage-empty {
+    text-align: center; padding: 3rem 2rem; color: var(--text3);
+  }
+  .manage-empty-icon { font-size: 2.5rem; margin-bottom: .75rem; }
+  .manage-empty-text { font-size: .9rem; }
+
+  /* Pagination */
+  .manage-pagination { display: flex; align-items: center; justify-content: space-between; padding: .85rem 1.5rem; border-top: 1px solid #E2E8F0; }
+  .pg-info { font-size: .78rem; color: var(--text3); }
+  .pg-btns { display: flex; gap: .35rem; }
+  .pg-btn  { padding: .3rem .75rem; border-radius: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; border: 1.5px solid #E2E8F0; background: #F8FAFC; color: var(--text2); transition: all .2s; }
+  .pg-btn:hover   { border-color: rgba(29,78,216,.3); color: var(--gold-lt); }
+  .pg-btn.active  { background: var(--gold-lt); color: #FFFFFF; border-color: var(--gold-lt); }
+  .pg-btn:disabled{ opacity: .4; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="ek-watermark">Explicitly Kre8tive · F23BA</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Publish modal -->
+<div class="modal-overlay" id="publishModal">
+  <div class="modal-box">
+    <div class="modal-icon">🚀</div>
+    <div class="modal-title">Publish Timetable?</div>
+    <div class="modal-sub" id="publishModalSub">This will make the timetable live for all students and teachers in the selected section. Notifications will be sent automatically.</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closePublishModal()">Cancel</button>
+      <button class="modal-confirm" onclick="confirmPublish()">Yes, Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP NAV -->
+<header class="showcase-header" id="mainNav">
+  <div class="brand" style="color:#1251af;">IBIT·TAS &nbsp;<span>×</span>&nbsp; Explicitly Kre8tive</div>
+  <nav class="page-nav">
+    <button class="nav-btn active" onclick="show('login',this)">01 · Login</button>
+    <button class="nav-btn" onclick="show('dash',this)">02 · Dashboard</button>
+    <button class="nav-btn" onclick="show('dash-student',this)">🎓 Student Hub</button>
+<button class="nav-btn" onclick="show('dash-teacher',this)">👨‍🏫 Teacher Hub</button>
+    <button class="nav-btn" onclick="show('tt',this)">03 · Timetable</button>
+    <button class="nav-btn" onclick="show('clash',this)">04 · Clash Detection</button>
+    <button class="nav-btn" onclick="show('req',this)">05 · Teacher Request</button>
+    <button class="nav-btn" onclick="show('notif',this)">06 · Notifications</button>
+    <button class="nav-btn" onclick="show('analytics',this)">07 · Analytics</button>
+    <button class="nav-btn" onclick="show('makett',this)" style="background:rgba(29,78,216,.25);border-color:rgba(255,255,255,.5);">🗓 08 · Build Timetable</button>
+    <button class="nav-btn" onclick="show('teachers',this)">09 · Teachers</button>
+    <button class="nav-btn" onclick="show('rooms',this)">10 · Rooms</button>
+    <button class="nav-btn" onclick="show('courses',this)">11 · Courses</button>
+    <button class="nav-btn" onclick="show('sections',this)">12 · Sections</button>
+  </nav>
+</header>
+
+<div class="canvas">
+
+<!-- PAGE 1 — LOGIN -->
+<div id="login" class="page active">
+  <div class="login-wrap">
+  <div class="login-left">
+  <div class="login-left-stripe"></div>
+  <div class="login-left-inner">
+
+    <!-- Logo + System Name Row -->
+  <div class="login-logo">
+  <img 
+    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFNDwvU1e1kz_Li_iAW3-gUznLjqii9gq6ug&s" 
+    style="
+      width: 150px; 
+      height: 150px; 
+      object-fit: contain;
+      border-radius: 10px;
+      padding: 4px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.2);
+    "
+    alt="IBIT Logo"
+  >
+  <span style="
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #93C5FD;
+  ">IBIT · Timetable Automation System</span>
+</div>
+
+    <!-- Main Headline -->
+    <h1 class="login-headline">Time-Table<br><em>Portal</em></h1>
+
+    
+
+  
+
+  </div>
+</div>
+    <div class="login-right">
+      <div class="login-card">
+        <div class="login-card-header">
+          <h2 class="login-card-title">Sign <span>In</span></h2>
+          <p class="login-card-sub">Select your role to continue</p>
+        </div>
+       <div class="role-card selected" data-email="admin@ibit.edu.pk" data-pass="12345678">
+  <div class="role-icon role-icon-admin">🛡️</div>
+  <div class="role-name">Admin</div>
+  <div class="role-desc">Full control</div>
+</div>
+<div class="role-card" data-email="teacher@ibit.edu.pk" data-pass="12345678">
+  <div class="role-icon role-icon-teacher">👨‍🏫</div>
+  <div class="role-name">Teacher</div>
+  <div class="role-desc">Requests &amp; view</div>
+</div>
+<div class="role-card" data-email="student@ibit.edu.pk" data-pass="12345678">
+  <div class="role-icon role-icon-student">🎓</div>
+  <div class="role-name">Student</div>
+  <div class="role-desc">View timetable</div>
+</div>
+        <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" type="email" value="admin@ibit.edu.pk"></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" value="12345678"></div>
+        <button class="login-btn">Sign In as Admin →</button>
+        <div class="login-footer">Forgot password? <a href="#">Reset here</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 2 — ADMIN DASHBOARD -->
+<div id="dash" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item active" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor <span class="sidebar-badge">2</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests <span class="sidebar-badge">5</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications <span class="sidebar-badge">8</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📄</span> Export PDF</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+      <div class="sidebar-section">
+  <div class="sidebar-section-label">Account</div>
+
+  <div class="sidebar-item" onclick="logoutUser()">
+    <span class="sidebar-icon">🚪</span> Logout
+  </div>
+</div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Saturday, April 2026</div><h1 class="page-title">Admin <span>Dashboard</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost">📄 Export PDF</button>
+          <!-- FIXED: + Add Class now navigates to Build Timetable page -->
+          <button class="btn btn-primary" onclick="goPage('makett')">+ Add Class</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card gold"><div class="stat-label">Total Slots This Week</div><div class="stat-value" style="color:var(--gold-lt)">142</div><div class="stat-sub"><span class="stat-trend trend-up">↑ 4 new</span> vs last week</div></div>
+        <div class="stat-card teal"><div class="stat-label">Classes Conducted</div><div class="stat-value" style="color:var(--teal)">118</div><div class="stat-sub"><span class="stat-trend trend-up">83%</span> completion rate</div></div>
+        <div class="stat-card coral"><div class="stat-label">Cancellations</div><div class="stat-value" style="color:var(--coral)">11</div><div class="stat-sub"><span class="stat-trend trend-dn">↑ 3</span> from last week</div></div>
+        <div class="stat-card amber"><div class="stat-label">Pending Requests</div><div class="stat-value" style="color:var(--amber)">5</div><div class="stat-sub">2 urgent · 3 standard</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Weekly Class Activity</div><div class="card-sub">Scheduled vs Conducted vs Cancelled</div></div><span class="pill pill-gold">This Week</span></div>
+          <div class="mini-chart">
+            <div class="bar-wrap"><div class="bar" style="height:60%;background:var(--gold-lt)"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:72%;background:var(--gold-lt)"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:55%;background:var(--gold-lt)"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:80%;background:var(--gold-lt)"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:48%;background:var(--gold-lt)"></div><div class="bar-label">Fri</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:60%;background:var(--teal);opacity:.85"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:65%;background:var(--teal);opacity:.85"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:50%;background:var(--teal);opacity:.85"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:72%;background:var(--teal);opacity:.85"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:40%;background:var(--teal);opacity:.85"></div><div class="bar-label">Fri</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:10%;background:var(--coral)"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:14%;background:var(--coral)"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:8%;background:var(--coral)"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:12%;background:var(--coral)"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:18%;background:var(--coral)"></div><div class="bar-label">Fri</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div class="activity-list">
+            <div class="activity-item"><div class="activity-dot" style="background:var(--coral)"></div><div><div class="activity-text"><strong>Dr. Kamran</strong> cancelled OS lecture (Sec B)</div><div class="activity-time">09:15 · today</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--teal)"></div><div><div class="activity-text"><strong>Makeup approved</strong> — IP Lab Sec A, Mon 2 PM</div><div class="activity-time">08:40 · today</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--amber)"></div><div><div class="activity-text"><strong>Clash detected</strong> — Room 204 double-booked Tue</div><div class="activity-time">Yesterday · 4:30 PM</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--gold-lt)"></div><div><div class="activity-text"><strong>New timetable</strong> published for Sec F23-A</div><div class="activity-time">Yesterday · 11:00 AM</div></div></div>
+            <div class="activity-item"><div class="activity-dot" style="background:var(--teal)"></div><div><div class="activity-text"><strong>Section merge</strong> approved — DS Sec A+B, Fri</div><div class="activity-time">2 days ago</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-grid">
+       <div class="card">
+  <div class="card-header">
+    <div class="card-title">Today's Timetable Preview</div>
+    <span class="pill pill-teal" id="ttPreviewPill">Live</span>
+  </div>
+ 
+  <!-- Section filter for the preview -->
+  <div style="display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap;align-items:center">
+    <select id="dashPreviewSection"
+      style="font-size:.75rem;padding:.3rem .6rem;border:1.5px solid #E2E8F0;border-radius:8px;color:var(--text2);background:#fff;cursor:pointer;outline:none"
+      onchange="renderDashTTPreview()">
+      <option value="all">All Sections</option>
+      <option value="0">F23-Afternoon-A</option>
+      <option value="1">F23-Afternoon-B</option>
+      <option value="2">F23-Afternoon-C</option>
+      <option value="3">F23-Morning-A</option>
+    </select>
+    <span id="dashPreviewStatus"
+      style="font-size:.72rem;color:var(--text3);font-style:italic">
+      No timetable published yet — showing static preview
+    </span>
+  </div>
+ 
+  <div style="overflow-x:auto">
+    <table class="mini-tt" id="dashTTPreviewTable">
+      <!-- Injected by renderDashTTPreview() -->
+    </table>
+  </div>
+</div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Pending Approvals</div><span class="pill pill-coral">5 waiting</span></div>
+          <div class="req-list">
+            <div class="req-item"><div class="req-info"><div class="req-teacher">Dr. Sara – Makeup Request</div><div class="req-detail">IP Lecture · Sec A · Mon 2:00 PM · Room 202</div></div><div class="req-actions"><button class="req-btn req-approve">✓</button><button class="req-btn req-reject">✕</button></div></div>
+            <div class="req-item"><div class="req-info"><div class="req-teacher">Prof. Bilal – Section Merge</div><div class="req-detail">DS Sec A+B · Fri 11:00 AM · Auditorium</div></div><div class="req-actions"><button class="req-btn req-approve">✓</button><button class="req-btn req-reject">✕</button></div></div>
+            <div class="req-item"><div class="req-info"><div class="req-teacher">Dr. Kamran – Reschedule</div><div class="req-detail">OS Lecture · Sec B · Wed 9:00 AM → Thu</div></div><div class="req-actions"><button class="req-btn req-approve">✓</button><button class="req-btn req-reject">✕</button></div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+
+
+
+<!-- ============================================ -->
+<!-- STUDENT DASHBOARD PAGE                         -->
+<!-- ============================================ -->
+<div id="dash-student" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item active" onclick="sidebarNav(this,'dash-student')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications <span class="sidebar-badge">3</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <div class="sidebar-item" onclick="logoutUser()"><span class="sidebar-icon">🚪</span> Logout</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Saturday, April 2026</div><h1 class="page-title">Student <span>Dashboard</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost">📄 Export PDF</button>
+          <button class="btn btn-primary" onclick="goPage('tt')">📅 View Timetable</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card gold"><div class="stat-label">Classes Today</div><div class="stat-value" style="color:var(--gold-lt)">4</div><div class="stat-sub">Mon · 8:00 – 11:00</div></div>
+        <div class="stat-card teal"><div class="stat-label">Upcoming Tests</div><div class="stat-value" style="color:var(--teal)">1</div><div class="stat-sub"><span class="stat-trend trend-up">Dec 14</span> · OS Midterm</div></div>
+        <div class="stat-card coral"><div class="stat-label">Attendance This Week</div><div class="stat-value" style="color:var(--coral)">87%</div><div class="stat-sub"><span class="stat-trend trend-up">↑ 2%</span> vs last week</div></div>
+        <div class="stat-card amber"><div class="stat-label">Notifications</div><div class="stat-value" style="color:var(--amber)">3</div><div class="stat-sub">2 unread · 1 announcement</div></div>
+      </div>
+      <div class="dash-grid">
+        <!-- Weekly class count chart -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Weekly Class Load</div><div class="card-sub">Scheduled sessions per day</div></div>
+            <span class="pill pill-gold">This Week</span>
+          </div>
+          <div class="mini-chart">
+            <div class="bar-wrap"><div class="bar" style="height:60%;background:var(--gold-lt)"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:75%;background:var(--gold-lt)"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:50%;background:var(--gold-lt)"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:70%;background:var(--gold-lt)"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:40%;background:var(--gold-lt)"></div><div class="bar-label">Fri</div></div>
+          </div>
+        </div>
+        <!-- Recent notifications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Notifications</div>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--coral)"></div>
+              <div>
+                <div class="activity-text"><strong>OS Lecture</strong> cancelled tomorrow (Wed)</div>
+                <div class="activity-time">Today · 09:15</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--teal)"></div>
+              <div>
+                <div class="activity-text"><strong>Makeup session approved</strong> – IP Lab, Fri 2 PM</div>
+                <div class="activity-time">Yesterday · 16:30</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--amber)"></div>
+              <div>
+                <div class="activity-text"><strong>New timetable</strong> published for your section</div>
+                <div class="activity-time">Yesterday · 11:00</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--gold-lt)"></div>
+              <div>
+                <div class="activity-text"><strong>Midterm schedule</strong> uploaded – check announcements</div>
+                <div class="activity-time">2 days ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--teal)"></div>
+              <div>
+                <div class="activity-text"><strong>Room change</strong> – DS Lecture moved to R-305</div>
+                <div class="activity-time">3 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-grid">
+        <!-- Today's timetable preview -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Today's Timetable Preview</div>
+            <span class="pill pill-teal">Live</span>
+          </div>
+          <table class="mini-tt">
+            <tr><th>Time</th><th class="today">Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr>
+            <tr>
+              <td class="tt-time">8–9</td>
+              <td><div class="tt-cell tc-gold">IP Lab<br><small>R-204</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td class="tt-time">9–10</td>
+              <td><div class="tt-cell tc-teal">OS<br><small>R-101</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td class="tt-time">10–11</td>
+              <td><div class="tt-cell tc-coral">MAD<br><small>R-204</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+          </table>
+        </div>
+        <!-- Upcoming events / deadlines -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Upcoming Deadlines</div>
+            <span class="pill pill-coral">2 upcoming</span>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--coral)"></div>
+              <div>
+                <div class="activity-text"><strong>OS Midterm Exam</strong> – Dec 14, 10:00 AM</div>
+                <div class="activity-time">14 days left</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--amber)"></div>
+              <div>
+                <div class="activity-text"><strong>Project Submission</strong> – MAD Final Project</div>
+                <div class="activity-time">21 days left</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- TEACHER DASHBOARD PAGE                         -->
+<!-- ============================================ -->
+<div id="dash-teacher" class="page" >
+  <div class="app-shell" >
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item active" onclick="sidebarNav(this,'dash-teacher')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests <span class="sidebar-badge">2</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications <span class="sidebar-badge">4</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <div class="sidebar-item" onclick="logoutUser()"><span class="sidebar-icon">🚪</span> Logout</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Saturday, April 2026</div><h1 class="page-title">Teacher <span>Dashboard</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost">📄 Export PDF</button>
+          <button class="btn btn-primary" onclick="goPage('req')">📨 My Requests</button>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card gold"><div class="stat-label">Classes Today</div><div class="stat-value" style="color:var(--gold-lt)">3</div><div class="stat-sub">08:00 – 11:00 · 3 slots</div></div>
+        <div class="stat-card teal"><div class="stat-label">Classes This Week</div><div class="stat-value" style="color:var(--teal)">16</div><div class="stat-sub"><span class="stat-trend trend-up">94%</span> conducted</div></div>
+        <div class="stat-card coral"><div class="stat-label">Cancellations</div><div class="stat-value" style="color:var(--coral)">1</div><div class="stat-sub"><span class="stat-trend trend-dn">OS Lec · Wed</span></div></div>
+        <div class="stat-card amber"><div class="stat-label">Pending Requests</div><div class="stat-value" style="color:var(--amber)">2</div><div class="stat-sub">1 makeup · 1 reschedule</div></div>
+      </div>
+      <div class="dash-grid">
+        <!-- Weekly class activity (teacher's own) -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">My Weekly Schedule</div><div class="card-sub">Scheduled classes per day</div></div>
+            <span class="pill pill-gold">This Week</span>
+          </div>
+          <div class="mini-chart">
+            <div class="bar-wrap"><div class="bar" style="height:50%;background:var(--gold-lt)"></div><div class="bar-label">Mon</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:70%;background:var(--gold-lt)"></div><div class="bar-label">Tue</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:40%;background:var(--gold-lt)"></div><div class="bar-label">Wed</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:60%;background:var(--gold-lt)"></div><div class="bar-label">Thu</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:30%;background:var(--gold-lt)"></div><div class="bar-label">Fri</div></div>
+          </div>
+        </div>
+        <!-- Recent activity / notifications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Activity</div>
+          </div>
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--teal)"></div>
+              <div>
+                <div class="activity-text"><strong>Makeup request approved</strong> – IP Lab for Sec A, Mon 2 PM</div>
+                <div class="activity-time">08:40 · today</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--coral)"></div>
+              <div>
+                <div class="activity-text"><strong>Clash detected</strong> – Room 204 double‑booked Tue 10‑11</div>
+                <div class="activity-time">Yesterday · 4:30 PM</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--amber)"></div>
+              <div>
+                <div class="activity-text"><strong>Reschedule pending</strong> – OS Lecture to Thursday</div>
+                <div class="activity-time">Yesterday · 2:00 PM</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--gold-lt)"></div>
+              <div>
+                <div class="activity-text"><strong>Timetable update</strong> published for Sec F23‑A</div>
+                <div class="activity-time">2 days ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--teal)"></div>
+              <div>
+                <div class="activity-text"><strong>Section merge approved</strong> – DS Sec A+B, Fri 11 AM</div>
+                <div class="activity-time">3 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-grid">
+        <!-- Today's timetable preview for teacher -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Today's Timetable Preview</div>
+            <span class="pill pill-teal">Live</span>
+          </div>
+          <table class="mini-tt">
+            <tr><th>Time</th><th class="today">Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th></tr>
+            <tr>
+              <td class="tt-time">8–9</td>
+              <td><div class="tt-cell tc-gold">IP Lab<br><small>R-204</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td class="tt-time">9–10</td>
+              <td><div class="tt-cell tc-teal">OS<br><small>R-101</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+            <tr>
+              <td class="tt-time">10–11</td>
+              <td><div class="tt-cell tc-coral">MAD<br><small>R-204</small></div></td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+          </table>
+        </div>
+        <!-- My submitted requests with status -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">My Requests</div>
+            <span class="pill pill-coral">2 pending</span>
+          </div>
+          <div class="req-list">
+            <div class="req-item">
+              <div class="req-info">
+                <div class="req-teacher">Makeup – IP Lecture · Sec A</div>
+                <div class="req-detail">Mon 2:00 PM · Room 202 · Submitted today</div>
+              </div>
+              <div class="req-actions">
+                <span class="pill pill-amber">Pending</span>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-info">
+                <div class="req-teacher">Reschedule – OS · Sec B</div>
+                <div class="req-detail">Wed 9:00 AM → Thu 10:00 AM · Submitted yesterday</div>
+              </div>
+              <div class="req-actions">
+                <span class="pill pill-amber">Pending</span>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-info">
+                <div class="req-teacher">Section Merge – DS Sec A+B</div>
+                <div class="req-detail">Fri 11:00 AM · Auditorium · Dec 10</div>
+              </div>
+              <div class="req-actions">
+                <span class="pill pill-teal">Approved</span>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-info">
+                <div class="req-teacher">Cancellation – MAD · Sec A</div>
+                <div class="req-detail">Thu 8:00 AM · Dec 8</div>
+              </div>
+              <div class="req-actions">
+                <span class="pill" style="background:var(--coral);">Rejected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<!-- PAGE 3 — TIMETABLE VIEW (replace entire #tt div) -->
+<div id="tt" class="page">
+  <div class="app-shell">
+ 
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item active" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <div class="sidebar-item" onclick="logoutUser()"><span class="sidebar-icon">🚪</span> Logout</div>
+      </div>
+    </aside>
+ 
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+ 
+      <!-- Header -->
+      <div class="main-header">
+        <div>
+          <div class="section-label" id="ttSectionHeaderLabel">Timetable View</div>
+          <h1 class="page-title">Weekly <span>Schedule</span></h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="exportPDF()">📄 Export PDF</button>
+          <button class="btn btn-teal" id="ttScheduleBtn" onclick="goPage('makett')">+ Schedule Class</button>
+        </div>
+      </div>
+ 
+      <!-- Toolbar: nav + view toggle + filters -->
+      <div class="builder-config" style="flex-wrap:wrap;gap:.6rem;align-items:center">
+ 
+        <!-- Week/Month nav -->
+        <div class="week-nav" style="display:flex;align-items:center;gap:.4rem">
+          <button class="week-btn" onclick="ttNavigate(-1)">‹</button>
+          <div class="week-label" id="ttDateLabel" style="font-size:.82rem;font-weight:600;color:var(--text);min-width:160px;text-align:center">Week of —</div>
+          <button class="week-btn" onclick="ttNavigate(1)">›</button>
+        </div>
+ 
+        <!-- Weekly / Monthly toggle -->
+        <div class="view-toggle-group" id="ttViewToggle" style="display:flex;gap:.3rem">
+          <button class="view-toggle-btn active" id="btnWeekly"  onclick="switchTTView('weekly')">📅 Weekly</button>
+          <button class="view-toggle-btn"         id="btnMonthly" onclick="switchTTView('monthly')">🗓 Monthly</button>
+        </div>
+ 
+        <div style="flex:1"></div><!-- spacer -->
+ 
+        <!-- Batch -->
+        <select class="config-select" id="ttBatchFilter" onchange="onTTFilterChange()">
+          <option value="all">Batch: All</option>
+        </select>
+ 
+        <!-- Section -->
+        <select class="config-select" id="ttSectionFilter" onchange="onTTFilterChange()">
+          <option value="all">Section: All</option>
+        </select>
+ 
+        <!-- Teacher -->
+        <select class="config-select" id="ttTeacherFilter" onchange="onTTFilterChange()">
+          <option value="all">Teacher: All</option>
+        </select>
+ 
+        <!-- Room -->
+        <select class="config-select" id="ttRoomFilter" onchange="onTTFilterChange()">
+          <option value="all">Room: All</option>
+        </select>
+ 
+        <!-- Course -->
+        <select class="config-select" id="ttCourseFilter" onchange="onTTFilterChange()">
+          <option value="all">Course: All</option>
+        </select>
+ 
+        <!-- Summary pills -->
+        <div class="builder-stats-row" style="margin-left:.25rem">
+          <div class="b-stat-chip gold" id="ttPillClasses">📅 0 Classes</div>
+          <div class="b-stat-chip coral" id="ttPillCancelled" style="display:none">❌ 0 Cancelled</div>
+        </div>
+      </div>
+ 
+      <!-- WEEKLY VIEW — uses same builder-grid-table as makett -->
+      <div id="weeklyTT">
+        <div class="builder-grid-card" style="margin-top:1rem">
+          <div class="builder-grid-card-header">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Weekly Timetable</div>
+              <div style="font-size:.75rem;color:var(--text3);margin-top:.15rem" id="ttSubLabel">Showing all sections</div>
+            </div>
+            <span class="pill pill-teal" id="ttLivePill">Live</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="builder-grid-table">
+              <thead>
+                <tr id="ttWeekHead">
+                  <th class="bgt-th" style="min-width:90px">Time</th>
+                  <th class="bgt-th">Monday</th>
+                  <th class="bgt-th">Tuesday</th>
+                  <th class="bgt-th">Wednesday</th>
+                  <th class="bgt-th">Thursday</th>
+                  <th class="bgt-th">Friday</th>
+                </tr>
+              </thead>
+              <tbody id="ttWeekBody">
+                <!-- Injected by renderTTPage() -->
+                <tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text3);font-style:italic">
+                  No timetable published yet. Build and publish one from the Build Timetable page.
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- MONTHLY VIEW -->
+      <div id="monthlyTT" style="display:none;margin-top:1rem">
+        <div class="builder-grid-card">
+          <div class="builder-grid-card-header">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Monthly Calendar</div>
+            <span class="pill pill-teal">Live</span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="builder-grid-table" id="monthlyGrid">
+              <thead id="monthlyHead">
+                <tr><th class="bgt-th">Mon</th><th class="bgt-th">Tue</th><th class="bgt-th">Wed</th><th class="bgt-th">Thu</th><th class="bgt-th">Fri</th></tr>
+              </thead>
+              <tbody id="monthlyBody">
+                <!-- Injected by renderMonthlyView() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Legend -->
+      <div class="builder-legend" style="margin-top:1rem">
+        <div class="bl-item"><div class="bl-dot" style="background:var(--gold-lt)"></div>Internet Programming</div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--teal)"></div>Operating Systems</div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--amber)"></div>Data Structures</div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--coral)"></div>MAD</div>
+        <div class="bl-item"><div class="bl-dot" style="background:var(--blue)"></div>Disc. Mathematics</div>
+        <div class="bl-item"><div class="bl-dot" style="background:rgba(220,38,38,.25);border:1px dashed var(--coral)"></div>Cancelled</div>
+        <div class="bl-item"><div class="bl-dot" style="background:rgba(8,145,178,.25)"></div>Makeup</div>
+      </div>
+ 
+    </main>
+  </div>
+</div>
+
+
+<!-- PAGE 4 — CLASH DETECTION -->
+<div id="clash" class="page">
+  <div class="clash-page">
+    <div class="clash-banner"><div class="clash-icon-big">⚠️</div><div class="clash-banner-text"><h2>2 Scheduling Conflicts Detected</h2><p>The system found conflicts in the timetable. Review and resolve before publishing. Suggested free slots are shown below.</p></div><span class="pill pill-coral" style="margin-left:auto;white-space:nowrap">Action Required</span></div>
+    <div class="clash-grid">
+      <div class="clash-card"><div class="clash-card-header"><div class="clash-type">🧑‍🏫 Teacher Double-Booking</div><span class="pill pill-coral">High Priority</span></div><div class="conflict-items"><div style="font-size:.8rem;color:var(--text3);margin-bottom:.5rem">Dr. Sara is assigned to two classes at the same time:</div><div class="conflict-row"><div><div class="conflict-label">Class A</div><div class="conflict-value">IP Lab · Sec A</div></div><div class="vs-badge">VS</div><div style="text-align:right"><div class="conflict-label">Class B</div><div class="conflict-value">IP Lecture · Sec C</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem"><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:.6rem .75rem"><div style="font-size:.72rem;color:var(--text3)">Day / Time</div><div style="font-size:.85rem;font-weight:600;margin-top:.15rem;color:var(--text)">Tuesday · 9:00 AM</div></div><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:.6rem .75rem"><div style="font-size:.72rem;color:var(--text3)">Room</div><div style="font-size:.85rem;font-weight:600;margin-top:.15rem;color:var(--text)">Lab 204 → 202</div></div></div></div></div>
+      <div class="clash-card"><div class="clash-card-header"><div class="clash-type">🏫 Room Double-Booking</div><span class="pill pill-amber">Medium Priority</span></div><div class="conflict-items"><div style="font-size:.8rem;color:var(--text3);margin-bottom:.5rem">Room 204 is booked for two different classes simultaneously:</div><div class="conflict-row"><div><div class="conflict-label">Booking A</div><div class="conflict-value">MAD · Sec A</div></div><div class="vs-badge">VS</div><div style="text-align:right"><div class="conflict-label">Booking B</div><div class="conflict-value">IP Lab · Sec B</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem"><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:.6rem .75rem"><div style="font-size:.72rem;color:var(--text3)">Day / Time</div><div style="font-size:.85rem;font-weight:600;margin-top:.15rem;color:var(--text)">Wednesday · 10:00 AM</div></div><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:.6rem .75rem"><div style="font-size:.72rem;color:var(--text3)">Capacity</div><div style="font-size:.85rem;font-weight:600;margin-top:.15rem;color:var(--text)">40 seats · OK</div></div></div></div></div>
+    </div>
+    <div class="suggestions"><div class="sug-header"><div><div class="sug-title">💡 System Suggestions — Available Slots</div><div style="font-size:.82rem;color:var(--text2);margin-top:.25rem">All suggestions verified free for teacher, room, and section</div></div><span class="pill pill-teal">6 options found</span></div><div class="sug-grid"><div class="sug-card"><div class="sug-card-rank">#1 Best Match</div><div class="sug-day">Monday</div><div class="sug-time">2:00 PM – 3:00 PM</div><div><span style="color:var(--teal)">Room 202</span> · 40 seats</div><button class="sug-btn">Use This Slot</button></div><div class="sug-card"><div class="sug-card-rank">#2 Alternative</div><div class="sug-day">Thursday</div><div class="sug-time">11:00 AM – 12:00 PM</div><div><span style="color:var(--teal)">Room 305</span> · 35 seats</div><button class="sug-btn">Use This Slot</button></div><div class="sug-card"><div class="sug-card-rank">#3 Alternative</div><div class="sug-day">Friday</div><div class="sug-time">1:00 PM – 2:00 PM</div><div><span style="color:var(--teal)">Room 202</span> · 40 seats</div><button class="sug-btn">Use This Slot</button></div></div></div>
+  </div>
+</div>
+
+
+<!-- PAGE 5 — TEACHER REQUEST -->
+<div id="req" class="page">
+  <div class="req-page">
+    <div class="main-header" style="margin-bottom:1.5rem"><div><div class="section-label">Teacher Portal</div><h1 class="page-title">Submit a <span>Request</span></h1></div></div>
+    <div class="req-layout">
+      <div class="form-card">
+        <div class="form-card-header" style="background-color:#65d1eb"><div class="form-card-title">New Request</div><div class="form-card-sub">Fill in the details. The system will check availability automatically.</div></div>
+        <div class="form-card-body">
+          <div class="req-type-tabs">
+            <div class="req-tab active" onclick="switchTab(this,'tab-makeup')">🔄 Makeup / Reschedule</div>
+            <div class="req-tab" onclick="switchTab(this,'tab-merge')">🔗 Section Merge</div>
+            <div class="req-tab" onclick="switchTab(this,'tab-cancel')">❌ Cancel Lecture</div>
+          </div>
+          <div id="tab-makeup" class="tab-panel active">
+            <div class="form-row"><div class="form-field"><label class="field-label">Course</label><select class="field-input"><option>Internet Programming</option><option>Operating Systems</option><option>Data Structures</option></select></div><div class="form-field"><label class="field-label">Section</label><select class="field-input"><option>F23-Afternoon-A</option><option>F23-Afternoon-B</option></select></div></div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Original Date</label><input type="date" class="field-input" value="2026-04-18"></div><div class="form-field"><label class="field-label">Original Time Slot</label><select class="field-input"><option>8:00 AM – 9:00 AM</option><option>9:00 AM – 10:00 AM</option></select></div></div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Preferred New Date</label><input type="date" class="field-input" value="2026-04-21"></div><div class="form-field"><label class="field-label">Preferred New Time</label><select class="field-input"><option>2:00 PM – 3:00 PM</option></select></div></div>
+            <div class="form-field"><label class="field-label">Preferred Room (optional)</label><select class="field-input"><option>No Preference (Auto-assign)</option><option>Room 202</option><option>Lab 204</option></select></div>
+            <div class="form-field"><label class="field-label">Reason for Request</label><textarea class="field-textarea">Attending a conference on April 18th. Requesting makeup for the same week.</textarea></div>
+            <div class="avail-check">✓ System checked: Monday April 21 · 2:00 PM · Room 202 is <strong>available</strong> for Dr. Sara &amp; Sec A</div>
+            <button class="submit-btn">Submit Makeup Request for Admin Approval →</button>
+          </div>
+          <div id="tab-merge" class="tab-panel">
+            <div style="background:var(--gold-dim);border:1.5px solid rgba(29,78,216,.2);border-radius:10px;padding:.85rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--gold-lt)">🔗 A section merge combines two sections into one joint class. Both sections will be notified upon approval.</div>
+            <div class="form-field"><label class="field-label">Course to Merge</label><select class="field-input"><option>Data Structures</option><option>Internet Programming</option></select></div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Section A</label><select class="field-input"><option>F23-Afternoon-A</option><option>F23-Afternoon-B</option></select></div><div class="form-field"><label class="field-label">Section B</label><select class="field-input"><option>F23-Afternoon-B</option><option>F23-Afternoon-C</option></select></div></div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.8rem;color:var(--text2)"><div style="font-weight:600;color:var(--text);margin-bottom:.35rem">Combined student count</div>Section A: ~35 + Section B: ~33 = <strong style="color:var(--gold-lt)">~68 total</strong> — Room ≥ 68 required.</div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Preferred Date</label><input type="date" class="field-input" value="2026-04-25"></div><div class="form-field"><label class="field-label">Preferred Time</label><select class="field-input"><option>11:00 AM – 12:00 PM</option></select></div></div>
+            <div class="form-field"><label class="field-label">Preferred Venue</label><select class="field-input"><option>Auditorium (200 seats)</option><option>Lecture Hall A (80 seats)</option></select></div>
+            <div class="form-field"><label class="field-label">Reason</label><textarea class="field-textarea">Guest speaker session — both sections cover the same topic this week.</textarea></div>
+            <div class="avail-check">✓ System checked: Auditorium is <strong>free</strong> on Apr 25 · 11:00 AM</div>
+            <button class="submit-btn">Submit Section Merge Request →</button>
+          </div>
+          <div id="tab-cancel" class="tab-panel">
+            <div style="background:var(--coral-dim);border:1.5px solid rgba(220,38,38,.2);border-radius:10px;padding:.85rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--coral)">❌ Cancellations are logged for admin records. Students will be notified instantly.</div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Course</label><select class="field-input"><option>Operating Systems</option><option>Internet Programming</option></select></div><div class="form-field"><label class="field-label">Section</label><select class="field-input"><option>F23-Afternoon-B</option></select></div></div>
+            <div class="form-row"><div class="form-field"><label class="field-label">Date to Cancel</label><input type="date" class="field-input" value="2026-04-18"></div><div class="form-field"><label class="field-label">Time Slot</label><select class="field-input"><option>9:00 AM – 10:00 AM</option></select></div></div>
+            <div class="form-field"><label class="field-label">Reason</label><select class="field-input"><option>Personal Emergency</option><option>Sick Leave</option><option>Conference / Event</option><option>Department Meeting</option></select></div>
+            <div class="form-field"><label class="field-label">Will you arrange a makeup class?</label><select class="field-input"><option>Yes — I will submit a makeup request</option><option>No — admin to decide</option></select></div>
+            <div class="form-field"><label class="field-label">Additional Notes (optional)</label><textarea class="field-textarea" placeholder="Any additional info for admin..."></textarea></div>
+            <button class="submit-btn" style="background:var(--coral)">Submit Cancellation →</button>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="workflow-card">
+          <div class="workflow-header"><div class="workflow-title">Request Workflow</div></div>
+          <div class="workflow-body">
+            <div class="workflow-step"><div class="step-circle sc-done">1</div><div class="step-info"><div class="step-name">Submit Request</div><div class="step-desc">Teacher fills the form</div></div></div>
+            <div class="workflow-step"><div class="step-circle sc-active">2</div><div class="step-info"><div class="step-name">System Checks Availability</div><div class="step-desc">Auto-verifies teacher, room &amp; section</div></div></div>
+            <div class="workflow-step"><div class="step-circle sc-pending">3</div><div class="step-info"><div class="step-name">Admin Review</div><div class="step-desc">Admin approves or rejects</div></div></div>
+            <div class="workflow-step"><div class="step-circle sc-pending">4</div><div class="step-info"><div class="step-name">Timetable Updated</div><div class="step-desc">New slot reflects instantly</div></div></div>
+            <div class="workflow-step"><div class="step-circle sc-pending">5</div><div class="step-info"><div class="step-name">Students Notified</div><div class="step-desc">Push alert to all section students</div></div></div>
+          </div>
+        </div>
+        <div class="workflow-card">
+          <div class="workflow-header" style="display:flex;justify-content:space-between;align-items:center"><div class="workflow-title">My Request History</div><span class="pill pill-gold">3 total</span></div>
+          <div class="workflow-body" style="padding-top:.5rem">
+            <div class="hist-item"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px"></div><div><div class="hist-title">DS Makeup · Sec B</div><div class="hist-meta">Approved · Mon Apr 14 · Room 305</div></div></div>
+            <div class="hist-item"><div style="width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px"></div><div><div class="hist-title">IP Section Merge A+C</div><div class="hist-meta">Pending Admin Review</div></div></div>
+            <div class="hist-item"><div style="width:6px;height:6px;border-radius:50%;background:var(--coral);flex-shrink:0;margin-top:5px"></div><div><div class="hist-title">OS Lecture Cancel · Sec A</div><div class="hist-meta">Rejected – no valid alternative</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 6 — NOTIFICATIONS -->
+<div id="notif" class="page">
+  <div class="notif-page">
+    <div class="main-header" style="margin-bottom:1.5rem"><div><div class="section-label">System Alerts</div><h1 class="page-title">Notifications <span>Panel</span></h1></div><div class="header-actions"><button class="btn btn-ghost">Mark All Read</button></div></div>
+    <div class="notif-layout">
+      <div class="notif-sidebar">
+        <div class="notif-summary"><div class="ns-title">Summary</div><div class="ns-stat"><div class="ns-label">Unread</div><div class="ns-count" style="color:var(--gold-lt)">8</div></div><div class="ns-stat"><div class="ns-label">Today</div><div class="ns-count">12</div></div><div class="ns-stat"><div class="ns-label">This Week</div><div class="ns-count">34</div></div><div class="ns-stat"><div class="ns-label">Cancellations</div><div class="ns-count" style="color:var(--coral)">4</div></div></div>
+        <div class="notif-filter"><div class="nf-header">Filter by Type</div><div class="nf-btn active">All Notifications <span class="nf-count">8</span></div><div class="nf-btn">Cancellations <span class="nf-count">4</span></div><div class="nf-btn">Makeup Classes <span class="nf-count">2</span></div><div class="nf-btn">Timetable Changes <span class="nf-count">1</span></div><div class="nf-btn">Requests <span class="nf-count">1</span></div></div>
+      </div>
+      <div>
+        <div class="notif-feed">
+          <div class="notif-card unread coral"><div class="notif-dot nd-coral">❌</div><div class="notif-body"><div class="notif-title">Lecture Cancelled — OS · Section B</div><div class="notif-msg">Dr. Kamran cancelled today's Operating Systems lecture for Section B. Logged for admin records.</div><div class="notif-meta">09:15 · Apr 18, 2026</div></div><div class="notif-unread-dot" style="background:var(--coral)"></div></div>
+          <div class="notif-card unread teal"><div class="notif-dot nd-teal">✅</div><div class="notif-body"><div class="notif-title">Makeup Approved — IP Lab · Section A</div><div class="notif-msg">Your makeup request is approved. New slot: Monday, April 21 at 2:00 PM in Room 202.</div><div class="notif-meta">08:40 · Apr 18, 2026</div></div><div class="notif-unread-dot"></div></div>
+          <div class="notif-card unread amber"><div class="notif-dot nd-amber">⚠️</div><div class="notif-body"><div class="notif-title">Clash Detected — Room 204 Double-Booked</div><div class="notif-msg">Room 204 is booked for MAD Section A and IP Lab Section B simultaneously on Wednesday 10:00 AM.</div><div class="notif-meta">Yesterday · 4:30 PM</div></div><div class="notif-unread-dot" style="background:var(--amber)"></div></div>
+          <div class="notif-card"><div class="notif-dot nd-gold">📅</div><div class="notif-body"><div class="notif-title">Timetable Updated — Section F23-A</div><div class="notif-msg">Friday's DM lecture has been moved to Thursday 11:00 AM. Check your updated timetable.</div><div class="notif-meta">Yesterday · 11:00 AM</div></div></div>
+          <div class="notif-card"><div class="notif-dot nd-teal">🔗</div><div class="notif-body"><div class="notif-title">Section Merge Approved — DS Sections A+B</div><div class="notif-msg">Prof. Bilal's request to merge Data Structures sections A and B approved for Friday 11:00 AM in the Auditorium.</div><div class="notif-meta">2 days ago</div></div></div>
+          <div class="notif-card"><div class="notif-dot nd-coral">❌</div><div class="notif-body"><div class="notif-title">Lecture Cancelled — DM · Section C</div><div class="notif-msg">Dr. Nasir cancelled the Discrete Mathematics lecture for Section C on April 16. Makeup scheduled next week.</div><div class="notif-meta">2 days ago</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 7 — ANALYTICS -->
+<div id="analytics" class="page">
+  <div class="analytics-page">
+    <div class="analytics-header"><h1 class="analytics-title">Analytics <span style="color:var(--gold-lt)">Dashboard</span></h1><p class="analytics-sub">April 2026 · Section F23-Afternoon-A · All Teachers</p></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--gold-dim)">📅</div><div class="kpi-num" style="color:var(--gold-lt)">142</div><div class="kpi-label">Total Scheduled</div><div class="kpi-delta trend-up">↑ 8 from last month</div><div class="kpi-bar" style="background:var(--gold-lt)"></div></div>
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--teal-dim)">✅</div><div class="kpi-num" style="color:var(--teal)">118</div><div class="kpi-label">Classes Conducted</div><div class="kpi-delta trend-up">83% completion</div><div class="kpi-bar" style="background:var(--teal)"></div></div>
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--coral-dim)">❌</div><div class="kpi-num" style="color:var(--coral)">11</div><div class="kpi-label">Cancellations</div><div class="kpi-delta trend-dn">↑ 3 vs last month</div><div class="kpi-bar" style="background:var(--coral)"></div></div>
+      <div class="kpi-card"><div class="kpi-icon" style="background:var(--amber-dim)">🔄</div><div class="kpi-num" style="color:var(--amber)">13</div><div class="kpi-label">Makeup Classes</div><div class="kpi-delta trend-up">9 approved · 4 pending</div><div class="kpi-bar" style="background:var(--amber)"></div></div>
+    </div>
+    <div class="analytics-main">
+      <div class="chart-card">
+        <div class="chart-title">Weekly Class Performance — Scheduled vs Conducted vs Cancelled</div>
+        <div class="bar-chart">
+          <div style="flex:1"><div class="bc-group"><div class="bc-bar" style="height:80%;background:var(--gold-lt)"></div><div class="bc-bar" style="height:70%;background:var(--teal)"></div><div class="bc-bar" style="height:12%;background:var(--coral)"></div></div><div class="bc-label">W1</div></div>
+          <div style="flex:1"><div class="bc-group"><div class="bc-bar" style="height:90%;background:var(--gold-lt)"></div><div class="bc-bar" style="height:78%;background:var(--teal)"></div><div class="bc-bar" style="height:18%;background:var(--coral)"></div></div><div class="bc-label">W2</div></div>
+          <div style="flex:1"><div class="bc-group"><div class="bc-bar" style="height:75%;background:var(--gold-lt)"></div><div class="bc-bar" style="height:60%;background:var(--teal)"></div><div class="bc-bar" style="height:22%;background:var(--coral)"></div></div><div class="bc-label">W3</div></div>
+          <div style="flex:1"><div class="bc-group"><div class="bc-bar" style="height:85%;background:var(--gold-lt)"></div><div class="bc-bar" style="height:80%;background:var(--teal)"></div><div class="bc-bar" style="height:8%;background:var(--coral)"></div></div><div class="bc-label">W4</div></div>
+        </div>
+        <div class="chart-legend"><div class="cl-item"><div class="cl-dot" style="background:var(--gold-lt)"></div>Scheduled</div><div class="cl-item"><div class="cl-dot" style="background:var(--teal)"></div>Conducted</div><div class="cl-item"><div class="cl-dot" style="background:var(--coral)"></div>Cancelled</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cancellations by Type</div>
+        <div class="donut-wrap">
+          <div><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#E2E8F0" stroke-width="18"/><circle cx="50" cy="50" r="40" fill="none" stroke="#DC2626" stroke-width="18" stroke-dasharray="100 152" stroke-dashoffset="-38" stroke-linecap="round"/><circle cx="50" cy="50" r="40" fill="none" stroke="#D97706" stroke-width="18" stroke-dasharray="68 184" stroke-dashoffset="-140" stroke-linecap="round"/><circle cx="50" cy="50" r="40" fill="none" stroke="#2563EB" stroke-width="18" stroke-dasharray="84 168" stroke-dashoffset="-208" stroke-linecap="round"/><text x="50" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">11</text><text x="50" y="60" text-anchor="middle" font-size="7" fill="#94A3B8">total</text></svg></div>
+          <div class="donut-legend"><div class="dl-item"><div class="dl-label"><div class="dl-square" style="background:var(--coral)"></div>No Prior Notice</div><div class="dl-pct" style="color:var(--coral)">40%</div></div><div class="dl-item"><div class="dl-label"><div class="dl-square" style="background:var(--amber)"></div>With Notice</div><div class="dl-pct" style="color:var(--amber)">27%</div></div><div class="dl-item"><div class="dl-label"><div class="dl-square" style="background:var(--gold-lt)"></div>Rescheduled</div><div class="dl-pct" style="color:var(--gold-lt)">33%</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="analytics-bottom">
+      <div class="chart-card">
+        <div class="chart-title">Teacher Performance — April 2026</div>
+        <table class="teacher-table">
+          <tr><th>Teacher</th><th>Scheduled</th><th>Conducted</th><th>Cancelled</th><th>Rate</th></tr>
+          <tr><td style="font-weight:600;color:var(--text)">Dr. Sara</td><td>32</td><td>30</td><td>2</td><td><div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:94%;background:var(--teal)"></div></div><div class="perf-pct" style="color:var(--teal)">94%</div></div></td></tr>
+          <tr><td style="font-weight:600;color:var(--text)">Dr. Kamran</td><td>28</td><td>22</td><td>6</td><td><div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:79%;background:var(--amber)"></div></div><div class="perf-pct" style="color:var(--amber)">79%</div></div></td></tr>
+          <tr><td style="font-weight:600;color:var(--text)">Prof. Bilal</td><td>24</td><td>23</td><td>1</td><td><div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:96%;background:var(--teal)"></div></div><div class="perf-pct" style="color:var(--teal)">96%</div></div></td></tr>
+          <tr><td style="font-weight:600;color:var(--text)">Ms. Ayesha</td><td>20</td><td>18</td><td>2</td><td><div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:90%;background:var(--teal)"></div></div><div class="perf-pct" style="color:var(--teal)">90%</div></div></td></tr>
+          <tr><td style="font-weight:600;color:var(--text)">Dr. Nasir</td><td>22</td><td>16</td><td>6</td><td><div class="perf-bar-wrap"><div class="perf-bar"><div class="perf-fill" style="width:73%;background:var(--coral)"></div></div><div class="perf-pct" style="color:var(--coral)">73%</div></div></td></tr>
+        </table>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Room Utilization This Month</div>
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem">
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Lab 204</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:92%;height:100%;background:var(--gold-lt);border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--gold-lt);min-width:32px;text-align:right">92%</div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Room 101</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:78%;height:100%;background:var(--teal);border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--teal);min-width:32px;text-align:right">78%</div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Room 202</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:85%;height:100%;background:var(--teal);border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--teal);min-width:32px;text-align:right">85%</div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Room 305</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:67%;height:100%;background:var(--amber);border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--amber);min-width:32px;text-align:right">67%</div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Room 204</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:58%;height:100%;background:var(--coral);border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--coral);min-width:32px;text-align:right">58%</div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><div style="font-size:.85rem;min-width:70px;color:var(--text)">Auditorium</div><div style="flex:1;height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden"><div style="width:22%;height:100%;background:#94A3B8;border-radius:4px"></div></div><div style="font-size:.78rem;font-weight:700;color:var(--text3);min-width:32px;text-align:right">22%</div></div>
+        </div>
+        <div style="margin-top:1.5rem;padding:1rem;background:var(--teal-dim);border-radius:10px;border:1.5px solid rgba(8,145,178,.15)"><div style="font-size:.8rem;font-weight:600;color:var(--teal);margin-bottom:.25rem">💡 Insight</div><div style="font-size:.78rem;color:var(--text2)">Lab 204 is near full capacity. Distribute more lectures to Room 202 or 305 to balance load.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     PAGE 8 — BUILD TIMETABLE (with Batch + Section filters)
+══════════════════════════════════════════ -->
+<div id="makett" class="page">
+  <div class="app-shell">
+    <!-- SIDEBAR (unchanged) -->
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor <span class="sidebar-badge">2</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests <span class="sidebar-badge">5</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications <span class="sidebar-badge">8</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item active" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📄</span> Export PDF</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <div class="main-header">
+        <div>
+          <div class="section-label">Admin · Timetable Management</div>
+          <h1 class="page-title">Build <span>Timetable</span></h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="clearTimetable()">🗑️ Clear All</button>
+          <button class="btn btn-teal" onclick="saveDraft()">💾 Save Draft</button>
+          <button class="btn btn-primary" onclick="openPublishModal()">🚀 Publish Timetable</button>
+        </div>
+      </div>
+
+      <!-- ✅ CONFIG BAR WITH BATCH + SECTION FILTERS -->
+      <div class="builder-config">
+        <!-- Batch filter -->
+        <div class="config-label">Batch</div>
+        <select class="config-select" id="batchFilter" onchange="changeBatchView()">
+          <option value="all">All Batches</option>
+          <option value="0">F23‑Afternoon</option>
+          <option value="1">F23‑Morning</option>
+        </select>
+
+        <!-- Section filter -->
+        <div class="config-label" style="margin-left:.5rem">Section</div>
+        <select class="config-select" id="sectionFilter" onchange="changeSectionView()">
+          <option value="all">All Sections</option>
+          <option value="0">A</option>
+          <option value="1">B</option>
+          <option value="2">C</option>
+        </select>
+
+        <div class="config-label" style="margin-left:.5rem">Semester</div>
+        <select class="config-select">
+          <option>Spring 2026</option>
+          <option>Fall 2025</option>
+        </select>
+
+        <!-- View mode (single section / all sections) -->
+        <div class="config-label" style="margin-left:.5rem">View</div>
+        <select class="config-select" id="viewMode" onchange="changeViewMode()">
+          <option value="single">Single Section</option>
+          <option value="all">All Sections</option>
+        </select>
+
+        <div class="builder-stats-row">
+          <div class="b-stat-chip gold" id="statTotal">📅 0 Classes</div>
+          <div class="b-stat-chip teal" id="statSlots">📊 0 / 30 Slots</div>
+          <div class="b-stat-chip coral" id="statClashes">⚠️ 0 Clashes</div>
+        </div>
+      </div>
+
+      <!-- Builder layout: Grid + Form (unchanged) -->
+      <div class="builder-layout">
+        <div>
+          <div class="builder-grid-card">
+            <div class="builder-grid-card-header">
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Weekly Timetable Grid</div>
+                <div style="font-size:.75rem;color:var(--text3);margin-top:.15rem">Click any <strong style="color:var(--gold-lt)">＋</strong> cell to select it, then fill the form → Add.</div>
+              </div>
+              <span class="pill pill-gold" id="gridSectionLabel">All Sections</span>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="builder-grid-table" id="builderGrid">
+                <thead>
+                  <tr>
+                    <th class="bgt-th" style="min-width:90px">Time</th>
+                    <th class="bgt-th" id="head-0">Monday</th>
+                    <th class="bgt-th" id="head-1">Tuesday</th>
+                    <th class="bgt-th today-col" id="head-2">Wednesday</th>
+                    <th class="bgt-th" id="head-3">Thursday</th>
+                    <th class="bgt-th" id="head-4">Friday</th>
+                  </tr>
+                </thead>
+                <tbody id="gridBody">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="builder-legend">
+            <div class="bl-item"><div class="bl-dot" style="background:var(--gold-lt)"></div>Internet Programming</div>
+            <div class="bl-item"><div class="bl-dot" style="background:var(--teal)"></div>Operating Systems</div>
+            <div class="bl-item"><div class="bl-dot" style="background:var(--amber)"></div>Data Structures</div>
+            <div class="bl-item"><div class="bl-dot" style="background:var(--coral)"></div>MAD</div>
+            <div class="bl-item"><div class="bl-dot" style="background:var(--blue)"></div>Disc. Mathematics</div>
+            <div class="bl-item"><div class="bl-dot" style="background:#8B5CF6"></div>Other / Custom</div>
+          </div>
+        </div>
+
+        <!-- Add Class Form Panel (unchanged) -->
+        <div class="add-form-panel" id="addFormPanel">
+          <div class="afp-header">
+            <div class="afp-title">➕ Add Class Slot</div>
+            <div class="afp-sub">Fill all fields and click Add</div>
+          </div>
+          <div class="afp-body">
+            <div class="afp-hint" id="slotHint">👆 Click a cell in the grid to auto-select Day &amp; Time</div>
+            <div class="afp-conflict-warn" id="conflictWarn"></div>
+
+            <div class="afp-field">
+              <label class="afp-label">Course</label>
+              <select class="afp-input" id="fCourse" onchange="updateCourseColor()">
+                <option value="">— Select Course —</option>
+                <option value="0">Internet Programming (IP)</option>
+                <option value="1">Operating Systems (OS)</option>
+                <option value="2">Data Structures (DS)</option>
+                <option value="3">Mobile App Dev (MAD)</option>
+                <option value="4">Disc. Mathematics (DM)</option>
+                <option value="5">Custom / Other</option>
+              </select>
+              <div class="color-preview" id="courseColorPreview" style="display:none">
+                <div class="cp-dot" id="courseColorDot"></div>
+                <span id="courseColorLabel" style="font-size:.75rem;color:var(--text3)"></span>
+              </div>
+            </div>
+
+            <div class="afp-field">
+              <label class="afp-label">Teacher</label>
+              <select class="afp-input" id="fTeacher">
+                <option value="">— Select Teacher —</option>
+                <option value="0">Dr. Sara</option>
+                <option value="1">Dr. Kamran</option>
+                <option value="2">Prof. Bilal</option>
+                <option value="3">Ms. Ayesha</option>
+                <option value="4">Dr. Nasir</option>
+                <option value="5">Dr. Ali</option>
+              </select>
+            </div>
+
+            <div class="afp-field">
+              <label class="afp-label">Room</label>
+              <select class="afp-input" id="fRoom">
+                <option value="">— Select Room —</option>
+                <option value="0">Lab 204 (40 seats)</option>
+                <option value="1">Room 101 (50 seats)</option>
+                <option value="2">Room 202 (40 seats)</option>
+                <option value="3">Room 305 (35 seats)</option>
+                <option value="4">Room 204 (40 seats)</option>
+                <option value="5">Room 106 (45 seats)</option>
+                <option value="6">Auditorium (200 seats)</option>
+              </select>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+              <div class="afp-field">
+                <label class="afp-label">Day</label>
+                <select class="afp-input" id="fDay" onchange="checkConflict()">
+                  <option value="">— Day —</option>
+                  <option value="0">Monday</option>
+                  <option value="1">Tuesday</option>
+                  <option value="2">Wednesday</option>
+                  <option value="3">Thursday</option>
+                  <option value="4">Friday</option>
+                </select>
+              </div>
+              <div class="afp-field">
+                <label class="afp-label">Time Slot</label>
+                <select class="afp-input" id="fSlot" onchange="checkConflict()">
+                  <option value="">— Slot —</option>
+                  <option value="0">8:00 – 9:00 AM</option>
+                  <option value="1">9:00 – 10:00 AM</option>
+                  <option value="2">10:00 – 11:00 AM</option>
+                  <option value="3">11:00 – 12:00 PM</option>
+                  <option value="4">1:00 – 2:00 PM</option>
+                  <option value="5">2:00 – 3:00 PM</option>
+                  <option value="6">3:00 – 4:00 PM</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="afp-field">
+              <label class="afp-label">Section</label>
+              <select class="afp-input" id="fSection">
+                <option value="0">F23-Afternoon-A</option>
+                <option value="1">F23-Afternoon-B</option>
+                <option value="2">F23-Afternoon-C</option>
+                <option value="3">F23-Morning-A</option>
+              </select>
+            </div>
+
+            <button class="add-btn" onclick="addClassToGrid()">＋ Add to Timetable</button>
+
+            <div style="margin-top:1.25rem;border-top:1px solid #E2E8F0;padding-top:1rem;">
+              <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:.6rem">Recent Additions</div>
+              <div id="recentLog" style="display:flex;flex-direction:column;gap:.4rem;max-height:160px;overflow-y:auto;">
+                <div style="font-size:.75rem;color:var(--text3);font-style:italic">Nothing added yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /builder-layout -->
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 9 — TEACHERS
+══════════════════════════════════════════ -->
+<div id="teachers" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor <span class="sidebar-badge">2</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests <span class="sidebar-badge">5</span></div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications <span class="sidebar-badge">8</span></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Manage · Faculty</div><h1 class="page-title">Teachers <span>Directory</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="exportManage('teachers')">📄 Export CSV</button>
+          <button class="btn btn-primary" onclick="openTeacherForm()">+ Add Teacher</button>
+        </div>
+      </div>
+      <div class="manage-kpi">
+        <div class="stat-card gold"><div class="stat-label">Total Teachers</div><div class="stat-value" id="tkpiTotal" style="color:var(--gold-lt)">6</div><div class="stat-sub">Faculty on record</div></div>
+        <div class="stat-card teal"><div class="stat-label">Active</div><div class="stat-value" id="tkpiActive" style="color:var(--teal)">5</div><div class="stat-sub">Currently teaching</div></div>
+        <div class="stat-card amber"><div class="stat-label">Avg Load</div><div class="stat-value" id="tkpiLoad" style="color:var(--amber)">26</div><div class="stat-sub">Classes / month</div></div>
+        <div class="stat-card coral"><div class="stat-label">On Leave</div><div class="stat-value" id="tkpiLeave" style="color:var(--coral)">1</div><div class="stat-sub">This semester</div></div>
+      </div>
+      <div class="manage-toolbar">
+        <input class="manage-search" id="teacherSearch" type="text" placeholder="🔍  Search by name, email, department…" oninput="renderTeacherTable()">
+        <select class="manage-filter-sel" id="teacherStatusFilter" onchange="renderTeacherTable()">
+          <option value="all">All Status</option><option value="Active">Active</option><option value="On Leave">On Leave</option><option value="Inactive">Inactive</option>
+        </select>
+        <select class="manage-filter-sel" id="teacherDeptFilter" onchange="renderTeacherTable()">
+          <option value="all">All Departments</option><option value="CS">Computer Science</option><option value="SE">Software Engineering</option><option value="IT">Information Technology</option>
+        </select>
+        <span class="pill pill-gold" id="teacherCount">6 Teachers</span>
+      </div>
+      <div class="manage-layout">
+        <div class="manage-table-card">
+          <div class="manage-table-header">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Faculty List</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="manage-table">
+              <thead><tr><th style="width:36px"></th><th onclick="sortManage('teachers','name')" style="cursor:pointer">Name ↕</th><th>Email</th><th>Courses</th><th>Load</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="teacherTbody"></tbody>
+            </table>
+          </div>
+          <div class="manage-pagination">
+            <div class="pg-info" id="teacherPgInfo">Showing 1–6 of 6</div>
+            <div class="pg-btns"><button class="pg-btn" disabled>‹ Prev</button><button class="pg-btn active">1</button><button class="pg-btn" disabled>Next ›</button></div>
+          </div>
+        </div>
+        <div class="manage-form-panel" id="teacherFormPanel">
+          <div class="mfp-header"><div class="mfp-title" id="teacherFormTitle">➕ Add Teacher</div><div class="mfp-sub">Fill all required fields</div></div>
+          <div class="mfp-body">
+            <input type="hidden" id="teacherEditIdx" value="-1">
+            <div class="mfp-field"><label class="mfp-label">Full Name *</label><input class="mfp-input" id="tfName" type="text" placeholder="e.g. Dr. Sara Ahmed"></div>
+            <div class="mfp-field"><label class="mfp-label">Email *</label><input class="mfp-input" id="tfEmail" type="email" placeholder="sara@ibit.edu.pk"></div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Department</label><select class="mfp-select" id="tfDept"><option value="CS">CS</option><option value="SE">SE</option><option value="IT">IT</option></select></div>
+              <div class="mfp-field"><label class="mfp-label">Status</label><select class="mfp-select" id="tfStatus"><option value="Active">Active</option><option value="On Leave">On Leave</option><option value="Inactive">Inactive</option></select></div>
+            </div>
+            <div class="mfp-field">
+  <label class="mfp-label">Assigned Courses</label>
+  <div style="position:relative">
+    <select class="mfp-select" id="tfCourseSelect" onchange="teacherAddCourse(this)">
+      <option value="">＋ Add a course…</option>
+    </select>
+  </div>
+  <div id="tfCourseTags" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;min-height:2rem"></div>
+</div>
+            <div class="mfp-field"><label class="mfp-label">Max Weekly Load (classes)</label><input class="mfp-input" id="tfLoad" type="number" min="1" max="40" value="8"></div>
+            <button class="mfp-save-btn" onclick="saveTeacher()">💾 Save Teacher</button>
+            <button class="mfp-cancel-btn" onclick="cancelTeacherForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 10 — ROOMS
+══════════════════════════════════════════ -->
+<div id="rooms" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Manage · Facilities</div><h1 class="page-title">Rooms <span>&amp; Labs</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="exportManage('rooms')">📄 Export CSV</button>
+          <button class="btn btn-primary" onclick="openRoomForm()">+ Add Room</button>
+        </div>
+      </div>
+      <div class="manage-kpi">
+        <div class="stat-card gold"><div class="stat-label">Total Rooms</div><div class="stat-value" id="rkpiTotal" style="color:var(--gold-lt)">7</div><div class="stat-sub">Across campus</div></div>
+        <div class="stat-card teal"><div class="stat-label">Available</div><div class="stat-value" id="rkpiAvail" style="color:var(--teal)">5</div><div class="stat-sub">Ready to schedule</div></div>
+        <div class="stat-card amber"><div class="stat-label">Total Capacity</div><div class="stat-value" id="rkpiCap" style="color:var(--amber)">450</div><div class="stat-sub">Seats across all rooms</div></div>
+        <div class="stat-card coral"><div class="stat-label">Avg Utilisation</div><div class="stat-value" id="rkpiUtil" style="color:var(--coral)">72%</div><div class="stat-sub">This semester</div></div>
+      </div>
+      <div class="manage-toolbar">
+        <input class="manage-search" id="roomSearch" type="text" placeholder="🔍  Search by room name, type…" oninput="renderRoomTable()">
+        <select class="manage-filter-sel" id="roomTypeFilter" onchange="renderRoomTable()">
+          <option value="all">All Types</option><option value="Lab">Lab</option><option value="Lecture">Lecture</option><option value="Auditorium">Auditorium</option>
+        </select>
+        <select class="manage-filter-sel" id="roomStatusFilter" onchange="renderRoomTable()">
+          <option value="all">All Status</option><option value="Available">Available</option><option value="Under Maintenance">Under Maintenance</option>
+        </select>
+        <span class="pill pill-gold" id="roomCount">7 Rooms</span>
+      </div>
+      <div class="manage-layout">
+        <div class="manage-table-card">
+          <div class="manage-table-header">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Room Registry</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="manage-table">
+              <thead><tr><th style="width:36px"></th><th onclick="sortManage('rooms','name')" style="cursor:pointer">Room ↕</th><th>Type</th><th>Capacity</th><th>Floor</th><th>Facilities</th><th>Utilisation</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="roomTbody"></tbody>
+            </table>
+          </div>
+          <div class="manage-pagination">
+            <div class="pg-info" id="roomPgInfo">Showing 1–7 of 7</div>
+            <div class="pg-btns"><button class="pg-btn" disabled>‹ Prev</button><button class="pg-btn active">1</button><button class="pg-btn" disabled>Next ›</button></div>
+          </div>
+        </div>
+        <div class="manage-form-panel" id="roomFormPanel">
+          <div class="mfp-header"><div class="mfp-title" id="roomFormTitle">➕ Add Room</div><div class="mfp-sub">Fill all required fields</div></div>
+          <div class="mfp-body">
+            <input type="hidden" id="roomEditIdx" value="-1">
+            <div class="mfp-field"><label class="mfp-label">Room Name *</label><input class="mfp-input" id="rfName" type="text" placeholder="e.g. Lab 204"></div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Type</label><select class="mfp-select" id="rfType"><option value="Lecture">Lecture</option><option value="Lab">Lab</option><option value="Auditorium">Auditorium</option></select></div>
+              <div class="mfp-field"><label class="mfp-label">Floor</label><select class="mfp-select" id="rfFloor"><option value="G">Ground</option><option value="1">1st</option><option value="2">2nd</option><option value="3">3rd</option></select></div>
+            </div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Capacity</label><input class="mfp-input" id="rfCapacity" type="number" min="10" max="500" placeholder="40"></div>
+              <div class="mfp-field"><label class="mfp-label">Status</label><select class="mfp-select" id="rfStatus"><option value="Available">Available</option><option value="Under Maintenance">Maintenance</option></select></div>
+            </div>
+            <div class="mfp-field">
+              <label class="mfp-label">Facilities</label>
+              <div id="rfFacilitiesWrap" style="display:flex;flex-direction:column;gap:.3rem">
+                <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" value="Projector"> Projector</label>
+                <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" value="AC"> Air Conditioning</label>
+                <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" value="Computers"> Computers</label>
+                <label style="font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:.5rem"><input type="checkbox" value="Whiteboard"> Whiteboard</label>
+              </div>
+            </div>
+            <button class="mfp-save-btn" onclick="saveRoom()">💾 Save Room</button>
+            <button class="mfp-cancel-btn" onclick="cancelRoomForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 11 — COURSES
+══════════════════════════════════════════ -->
+<div id="courses" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'sections')"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Manage · Curriculum</div><h1 class="page-title">Courses <span>Registry</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="exportManage('courses')">📄 Export CSV</button>
+          <button class="btn btn-primary" onclick="openCourseForm()">+ Add Course</button>
+        </div>
+      </div>
+      <div class="manage-kpi">
+        <div class="stat-card gold"><div class="stat-label">Total Courses</div><div class="stat-value" id="ckpiTotal" style="color:var(--gold-lt)">6</div><div class="stat-sub">This semester</div></div>
+        <div class="stat-card teal"><div class="stat-label">Core Courses</div><div class="stat-value" id="ckpiCore" style="color:var(--teal)">4</div><div class="stat-sub">Required</div></div>
+        <div class="stat-card amber"><div class="stat-label">Electives</div><div class="stat-value" id="ckpiElective" style="color:var(--amber)">1</div><div class="stat-sub">Optional</div></div>
+        <div class="stat-card coral"><div class="stat-label">Labs</div><div class="stat-value" id="ckpiLab" style="color:var(--coral)">1</div><div class="stat-sub">Practical sessions</div></div>
+      </div>
+      <div class="manage-toolbar">
+        <input class="manage-search" id="courseSearch" type="text" placeholder="🔍  Search by name, code…" oninput="renderCourseTable()">
+        <select class="manage-filter-sel" id="courseTypeFilter" onchange="renderCourseTable()">
+          <option value="all">All Types</option><option value="Core">Core</option><option value="Elective">Elective</option><option value="Lab">Lab</option>
+        </select>
+        <select class="manage-filter-sel" id="courseCHFilter" onchange="renderCourseTable()">
+          <option value="all">All Credit Hours</option><option value="1">1 CH</option><option value="2">2 CH</option><option value="3">3 CH</option>
+        </select>
+        <span class="pill pill-gold" id="courseCount">6 Courses</span>
+      </div>
+      <div class="manage-layout">
+        <div class="manage-table-card">
+          <div class="manage-table-header">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Course Catalogue</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="manage-table">
+              <thead><tr><th style="width:12px"></th><th onclick="sortManage('courses','name')" style="cursor:pointer">Course ↕</th><th>Code</th><th>Type</th><th>CH</th><th>Teacher</th><th>Sessions/wk</th><th>Actions</th></tr></thead>
+              <tbody id="courseTbody"></tbody>
+            </table>
+          </div>
+          <div class="manage-pagination">
+            <div class="pg-info" id="coursePgInfo">Showing 1–6 of 6</div>
+            <div class="pg-btns"><button class="pg-btn" disabled>‹ Prev</button><button class="pg-btn active">1</button><button class="pg-btn" disabled>Next ›</button></div>
+          </div>
+        </div>
+        <div class="manage-form-panel" id="courseFormPanel">
+          <div class="mfp-header"><div class="mfp-title" id="courseFormTitle">➕ Add Course</div><div class="mfp-sub">Fill all required fields</div></div>
+          <div class="mfp-body">
+            <input type="hidden" id="courseEditIdx" value="-1">
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Course Name *</label><input class="mfp-input" id="cfName" type="text" placeholder="e.g. Operating Systems"></div>
+              <div class="mfp-field"><label class="mfp-label">Code *</label><input class="mfp-input" id="cfCode" type="text" placeholder="OS"></div>
+            </div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Type</label><select class="mfp-select" id="cfType"><option value="Core">Core</option><option value="Elective">Elective</option><option value="Lab">Lab</option></select></div>
+              <div class="mfp-field"><label class="mfp-label">Credit Hours</label><select class="mfp-select" id="cfCH"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option></select></div>
+            </div>
+            <div class="mfp-field"><label class="mfp-label">Colour Tag</label>
+              <select class="mfp-select" id="cfColor">
+                <option value="gold">Blue (IP style)</option><option value="teal">Teal (OS style)</option><option value="amber">Amber (DS style)</option>
+                <option value="coral">Coral / Red (MAD style)</option><option value="blue">Dark Blue (DM style)</option><option value="purple">Purple</option>
+              </select>
+            </div>
+            <div class="mfp-field"><label class="mfp-label">Weekly Sessions</label><input class="mfp-input" id="cfSessions" type="number" min="1" max="10" value="3"></div>
+            <button class="mfp-save-btn" onclick="saveCourse()">💾 Save Course</button>
+            <button class="mfp-cancel-btn" onclick="cancelCourseForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 12 — SECTIONS
+══════════════════════════════════════════ -->
+<div id="sections" class="page">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="logo-gem-sm"></div>IBIT <span>TAS</span></div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'dash')"><span class="sidebar-icon">⚡</span> Dashboard</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'tt')"><span class="sidebar-icon">📅</span> Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'clash')"><span class="sidebar-icon">⚠️</span> Clash Monitor</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'req')"><span class="sidebar-icon">📨</span> Requests</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'notif')"><span class="sidebar-icon">🔔</span> Notifications</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Manage</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'makett')"><span class="sidebar-icon">🗓️</span> Build Timetable</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'teachers')"><span class="sidebar-icon">👨‍🏫</span> Teachers</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'rooms')"><span class="sidebar-icon">🏫</span> Rooms</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'courses')"><span class="sidebar-icon">📚</span> Courses</div>
+        <div class="sidebar-item active"><span class="sidebar-icon">👥</span> Sections</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Reports</div>
+        <div class="sidebar-item" onclick="sidebarNav(this,'analytics')"><span class="sidebar-icon">📊</span> Analytics</div>
+        <div class="sidebar-item" onclick="comingSoon('Settings')"><span class="sidebar-icon">⚙️</span> Settings</div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <div><div class="section-label">Manage · Students</div><h1 class="page-title">Sections <span>Manager</span></h1></div>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="exportManage('sections')">📄 Export CSV</button>
+          <button class="btn btn-primary" onclick="openSectionForm()">+ Add Section</button>
+        </div>
+      </div>
+      <div class="manage-kpi">
+        <div class="stat-card gold"><div class="stat-label">Total Sections</div><div class="stat-value" id="skpiTotal" style="color:var(--gold-lt)">4</div><div class="stat-sub">Active this semester</div></div>
+        <div class="stat-card teal"><div class="stat-label">Total Students</div><div class="stat-value" id="skpiStudents" style="color:var(--teal)">168</div><div class="stat-sub">Enrolled</div></div>
+        <div class="stat-card amber"><div class="stat-label">Avg Section Size</div><div class="stat-value" id="skpiAvg" style="color:var(--amber)">42</div><div class="stat-sub">Students / section</div></div>
+        <div class="stat-card coral"><div class="stat-label">Near Capacity</div><div class="stat-value" id="skpiFull" style="color:var(--coral)">1</div><div class="stat-sub">≥90% full</div></div>
+      </div>
+      <div class="manage-toolbar">
+        <input class="manage-search" id="sectionSearch" type="text" placeholder="🔍  Search by section name, batch…" oninput="renderSectionTable()">
+        <select class="manage-filter-sel" id="sectionBatchFilter" onchange="renderSectionTable()">
+          <option value="all">All Batches</option><option value="F23">F23</option><option value="F22">F22</option><option value="F24">F24</option><option value="F25">F25</option>
+        </select>
+        <select class="manage-filter-sel" id="sectionShiftFilter" onchange="renderSectionTable()">
+          <option value="all">All Shifts</option><option value="Afternoon">Afternoon</option><option value="Morning">Morning</option>
+        </select>
+        <span class="pill pill-gold" id="sectionCount">4 Sections</span>
+      </div>
+      <div class="manage-layout">
+        <div class="manage-table-card">
+          <div class="manage-table-header">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;color:var(--text)">Section List</div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="manage-table">
+              <thead><tr><th style="width:36px"></th><th onclick="sortManage('sections','name')" style="cursor:pointer">Section ↕</th><th>Batch</th><th>Shift</th><th>Students</th><th>Capacity</th><th>Fill Rate</th><th>Courses</th><th>Actions</th></tr></thead>
+              <tbody id="sectionTbody"></tbody>
+            </table>
+          </div>
+          <div class="manage-pagination">
+            <div class="pg-info" id="sectionPgInfo">Showing 1–4 of 4</div>
+            <div class="pg-btns"><button class="pg-btn" disabled>‹ Prev</button><button class="pg-btn active">1</button><button class="pg-btn" disabled>Next ›</button></div>
+          </div>
+        </div>
+        <div class="manage-form-panel" id="sectionFormPanel">
+          <div class="mfp-header"><div class="mfp-title" id="sectionFormTitle">➕ Add Section</div><div class="mfp-sub">Fill all required fields</div></div>
+          <div class="mfp-body">
+            <input type="hidden" id="sectionEditIdx" value="-1">
+            <div class="mfp-field"><label class="mfp-label">Section Name *</label><input class="mfp-input" id="sfName" type="text" placeholder="e.g. F23-Afternoon-A"></div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Batch</label><select class="mfp-select" id="sfBatch"><option value="F22">F22</option><option value="F23" selected>F23</option><option value="F24">F24</option><option value="F25">F25</option></select></div>
+              <div class="mfp-field"><label class="mfp-label">Shift</label><select class="mfp-select" id="sfShift"><option value="Morning">Morning</option><option value="Afternoon" selected>Afternoon</option></select></div>
+            </div>
+            <div class="mfp-row">
+              <div class="mfp-field"><label class="mfp-label">Section Label</label><select class="mfp-select" id="sfLabel"><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></div>
+              <div class="mfp-field"><label class="mfp-label">Max Capacity</label><input class="mfp-input" id="sfCapacity" type="number" min="10" max="100" value="50"></div>
+            </div>
+            <div class="mfp-field"><label class="mfp-label">Enrolled Students</label><input class="mfp-input" id="sfStudents" type="number" min="0" max="100" value="0"></div>
+            <div class="mfp-field">
+              
+            <button class="mfp-save-btn" onclick="saveSection()">💾 Save Section</button>
+            <button class="mfp-cancel-btn" onclick="cancelSectionForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
